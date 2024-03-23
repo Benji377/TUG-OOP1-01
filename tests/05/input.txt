@@ -1,0 +1,16 @@
+place 2 2 3
+place 2 1 8
+move 2 1 8 1 7
+move 2 2 3 2 4
+move 1 1 7 1 6
+move 1 2 4 2 5
+pass
+pass
+place 1 6
+place 2 1 6
+place 1 2 5
+place 1 2 4
+pass
+move 1 1 7 1 6
+move 4 1 6 2 5
+pass

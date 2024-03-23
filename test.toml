@@ -1,0 +1,72 @@
+[project_definition]
+binary_path = "./a1"
+makefile_path = "."
+make_targets = ["all"]
+project_name = "a1"
+global_timeout = 20
+
+################################################################################
+## public test cases
+##
+[[testcases]]
+name = "Config loaded!"
+description = "Sucessfully loaded a square map"
+type = "OrdIO"
+io_file = "tests/01/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["1", "configs/config_01.txt"]
+
+[[testcases]]
+name = "Game starts!"
+description = "Sucessfully placed a chip on the map"
+type = "OrdIO"
+io_file = "tests/02/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["1", "configs/config_02.txt"]
+
+[[testcases]]
+name = "Water fields!"
+description = "Water fields"
+type = "OrdIO"
+io_file = "tests/03/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["1", "configs/config_03.txt"]
+
+[[testcases]]
+name = "Full Game 1!"
+description = "A full game"
+type = "OrdIO"
+io_file = "tests/04/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["1", "configs/config_04.txt"]
+
+[[testcases]]
+name = "Full Game 2!"
+description = "Another full game"
+type = "OrdIO"
+io_file = "tests/05/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["2", "configs/config_05.txt"]
+
+[[testcases]]
+name = "Full Game 3!"
+description = "Another full game"
+type = "OrdIO"
+io_file = "tests/06/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["2", "configs/config_06.txt"]
+
+[[testcases]]
+name = "No map!"
+description = "Blind run. Deactivated map."
+type = "OrdIO"
+io_file = "tests/07/io.txt"
+io_prompt = "s*>\\s*$"
+exp_exit_code = 0
+argv = ["1", "configs/config_07.txt"]

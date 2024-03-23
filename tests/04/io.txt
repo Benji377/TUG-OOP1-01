@@ -1,0 +1,58 @@
+> Welcome to OOPtimal Tactics!
+> Playing maximum of 1 round(s)!
+> 
+> ------------------
+> Round 1/1 starts!
+> ------------------
+> 
+> ------------------
+> Placement Phase
+> ------------------
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 1|B 1|B 1|B 1
+> 3 |   |   |   |   |   |   
+> 
+> Player A, you have 1 chip(s) left, where and how do you want to place your chips?
+?  > 
+< place 1 3 2
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 2|B 1|B 1|B 1
+> 3 |   |   |   |   |   |   
+> 
+> Player B, you have 1 chip(s) left, where and how do you want to place your chips?
+?  > 
+< place 1 4 2
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 2|B 2|B 1|B 1
+> 3 |   |   |   |   |   |   
+> 
+> ------------------
+> Movement Phase
+> ------------------
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 2|B 2|B 1|B 1
+> 3 |   |   |   |   |   |   
+> 
+> Player B, what do you want to do?
+?  > 
+< move 1 4 2 4 3
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 2|B 1|B 1|B 1
+> 3 |   |   |   |B 1|   |   
+> 
+> Player A, what do you want to do?
+?  > 
+< move 1 3 2 3 3
+>   | 1 | 2 | 3 | 4 | 5 | 6 
+> 1 | ~ | ~ | ~ | ~ | ~ | ~ 
+> 2 |A 1|A 1|A 1|B 1|B 1|B 1
+> 3 |   |   |A 1|B 1|   |   
+> 
+> Player B, what do you want to do?
+?  > 
+< quit

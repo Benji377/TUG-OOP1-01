@@ -1,0 +1,11 @@
+place 1 1 1
+pass
+pass
+info
+move 1 2 2 1 1
+move 1 2 1 1 1
+pass
+place 2 1 2
+pass
+pass
+pass
