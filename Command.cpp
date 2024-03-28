@@ -1,23 +1,5 @@
-#include <vector>
 #include <string>
 #include "Command.hpp"
-
-class Command {
-private:
-  CommandType type_;
-  std::vector<std::string> parameters_;
-
-  bool isQuit();
-  CommandType getType();
-  std::vector<std::string> &getParameters();
-  void setType(CommandType type);
-  void setParameters(std::vector<std::string> &parameters);
-
-  Command(std::vector<std::string> &input);
-  explicit Command(CommandType type);
-  Command(Command& command);
-  ~Command();
-};
 
 Command::Command(Command &command) {
   type_ = command.type_;
@@ -29,13 +11,9 @@ Command::Command(CommandType type) {
 }
 
 Command::Command(std::vector<std::string> &input) {
-  // TODO
-}
-
-Command::~Command() {
-  // TODO: Change for the better
-  type_ = CommandType::INVALID;
-  parameters_ = std::vector<std::string>();
+  type_ = parseType(input.at(0));
+  input.erase(input.begin());
+  parameters_ = input;
 }
 
 bool Command::isQuit() {
@@ -60,16 +38,25 @@ void Command::setParameters(std::vector<std::string> &parameters) {
   parameters_ = parameters;
 }
 
-CommandType parseType(std::string &input) {
+CommandType Command::parseType(std::string &input) {
   if (input == "place") {
     return CommandType::PLACE;
   } else if (input == "pass") {
     return CommandType::PASS;
+  } else if (input == "move") {
+    return CommandType::MOVE;
+  } else if (input == "map") {
+    return CommandType::MAP;
+  } else if (input == "info") {
+    return CommandType::INFO;
+  } else if (input == "quit") {
+    return CommandType::QUIT;
   } else {
     return CommandType::INVALID;
   }
 }
 
-
-
+Command &Command::operator=(const Command&) {
+  return *this;
+}
 

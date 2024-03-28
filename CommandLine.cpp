@@ -7,7 +7,6 @@
 //
 
 #include <iostream>
-#include "Command.hpp"
 #include "CommandLine.hpp"
 
 void CommandLine::removeTrailingWhitespaces(std::string &string)
