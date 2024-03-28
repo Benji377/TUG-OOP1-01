@@ -2,3 +2,4 @@ a1
 valgrind_logs/
 testreport.html
 build/
+.idea
