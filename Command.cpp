@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include "Command.hpp"
 
 Command::Command(Command &command) {

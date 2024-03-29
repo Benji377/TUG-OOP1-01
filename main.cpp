@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
     std::cout << "[ERROR] Invalid maximum round number!" << std::endl;
     return INVALID_ROUND_NUMBER;
   }
-
   if (!Game::isValidConfig(argv[2]))
   {
     std::cout << "[ERROR] Invalid file!" << std::endl;

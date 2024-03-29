@@ -6,8 +6,8 @@ Game::Game(int maximum_rounds, char *config_path) {
   current_round_ = 0;
   max_rounds_ = maximum_rounds;
   phase_ = Phase::START;
-  player_a_ = new Player('a');
-  player_b_ = new Player('b');
+  player_a_ = new Player('A');
+  player_b_ = new Player('B');
   map_ = new Map(config_path, player_a_, player_b_);
   active_player_ = nullptr;
 }

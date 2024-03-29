@@ -43,7 +43,6 @@ std::string Utils::readConfigLine(char *config_path, int line_number) {
   std::fstream config_file(config_path);
   goToLine(config_file, line_number);
   config_file >> output;
-  //std::cin.get()
   return output;
 }
 
@@ -54,8 +53,7 @@ bool Utils::isValidConfig(char *config_path) {
     return false;
   }
   std::string magic = readConfigLine(config_path, 0);
-  std::cout << "Magic number: " + magic;
-  if (magic == "OOP\n") {
+  if (magic == "OOP") {
     return true;
   }
   return false;
@@ -71,7 +69,6 @@ std::vector<std::string> Utils::splitString(const std::string& string, const std
     pos_start = pos_end + delim_len;
     res.push_back (token);
   }
-
   res.push_back (string.substr (pos_start));
   return res;
 }

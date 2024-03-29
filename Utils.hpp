@@ -10,6 +10,7 @@
 #define UTILS_HPP
 
 #include <string>
+#include <vector>
 
 class Utils
 {

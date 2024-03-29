@@ -4,12 +4,12 @@
 #include <iostream>
 
 Map::Map(char* config_path, Player* player_a, Player* player_b) {
-  std::string dimensions = Utils::readConfigLine(config_path, 1);
+  std::string dimensions = Utils::readConfigLine(config_path, 2);
   std::vector<std::string> split_dimensions = Utils::splitString(dimensions, "_");
   columns_ = stoi(split_dimensions.at(0));
   rows_ = stoi(split_dimensions.at(1));
   fields_ = createFieldMap(config_path, player_a, player_b);
-  output_active_ = true; // TODO Check this
+  output_active_ = true;
 }
 
 int Map::getColumns() {
@@ -44,7 +44,7 @@ std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* 
   std::string line;
   std::vector<std::vector<Field*>> fields(rows_, std::vector<Field*> (columns_));
   for (int line_number = 0; line_number < rows_; line_number++) {
-    line = Utils::readConfigLine(config_path, line_number+2);
+    line = Utils::readConfigLine(config_path, line_number+3);
     for (int field_number = 0; field_number < columns_; field_number++) {
       char field_char = line.at(field_number);
       // TODO: Free space after field has been deleted
@@ -69,7 +69,7 @@ Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
 
 void Map::printMap() {
   // Print first row
-  for (int column_number = 0; column_number < columns_; column_number++) {
+  for (int column_number = 0; column_number <= columns_; column_number++) {
     if (column_number == 0) {
       std::cout << "  ";
     } else {
