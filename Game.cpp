@@ -1,8 +1,15 @@
+#include <iostream>
 #include "Game.hpp"
 #include "Utils.hpp"
 
 Game::Game(int maximum_rounds, char *config_path) {
-  // TODO
+  current_round_ = 0;
+  max_rounds_ = maximum_rounds;
+  phase_ = Phase::START;
+  player_a_ = new Player('a');
+  player_b_ = new Player('b');
+  map_ = new Map(config_path, player_a_, player_b_);
+  active_player_ = nullptr;
 }
 
 Map *Game::getMap() {
@@ -69,11 +76,37 @@ bool Game::isValidConfig(char *config_path) {
 }
 
 void Game::start() {
-  // TODO
+  std::cout << "Welcome to OOPtimal Tactics!\nPlaying maximum of " << max_rounds_ << " round(s)!\n";
+  std::cout << "\n";
+  std::cout << "------------------\n";
+  std::cout << "Round " << current_round_ << "/" << max_rounds_ << " starts!\n";
+  std::cout << "------------------\n";
+  std::cout << "\n";
+  std::cout << "------------------\n";
+  std::cout << "Placement Phase\n";
+  std::cout << "------------------\n";
+  map_->printMap();
+
 }
 void Game::execute(Command command) {
-  // TODO
+  if (command.isQuit()) {
+    phase_ = Phase::END;
+  } else if (command.getType() == CommandType::INFO) {
+    // TODO print Player info
+  } else if (command.getType() == CommandType::MAP) {
+    map_->setIsOutputActive(!map_->getIsOutputActive());
+  } else if (command.getType() == CommandType::PASS) {
+    // TODO Player does nothing
+  } else if (command.getType() == CommandType::PLACE) {
+    // TODO:Place a chip
+  } else if (command.getType() == CommandType::MOVE) {
+    // TODO: Move a chip/player
+  } else {
+    // Command not implemented?
+    std::cout << "Sorry not sorry";
+  }
 }
+
 bool Game::isRunning() {
   return phase_ != Phase::END;
 }

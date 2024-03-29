@@ -11,6 +11,8 @@ private:
   int rows_;
   std::vector<std::vector<Field*>> fields_;
   bool output_active_;
+  std::vector<std::vector<Field*>> createFieldMap(char* config_path, Player* player_a, Player* player_b);
+  Field* createField(char field_char, Player* player_a, Player* player_b);
 public:
   // Functions
   void setColumns(int columns);
@@ -21,6 +23,7 @@ public:
   std::vector<std::vector<Field*>> getFields();
   void setIsOutputActive(bool output_active);
   bool getIsOutputActive();
+  void printMap();
   // Constructors
   Map(char* config_path, Player* player_a, Player* player_b);
   Map(const Map&) = delete;

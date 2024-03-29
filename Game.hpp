@@ -6,6 +6,7 @@
 #include "Command.hpp"
 
 enum class Phase {
+  START,
   PLACEMENT,
   MOVEMENT,
   END
