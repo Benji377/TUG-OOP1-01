@@ -21,6 +21,11 @@ private:
   int max_rounds_;
   Phase phase_;
   Player* active_player_;
+  void announceRound() const;
+  void placePhase(Command command);
+  void movePhase(Command command);
+  void printPlayerPrompt();
+  void endPhase();
 public:
   // Functions
   Map *getMap();

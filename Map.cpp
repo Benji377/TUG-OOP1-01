@@ -68,6 +68,9 @@ Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
 }
 
 void Map::printMap() {
+  if (!output_active_) {
+    return;
+  }
   // Print first row
   for (int column_number = 0; column_number <= columns_; column_number++) {
     if (column_number == 0) {

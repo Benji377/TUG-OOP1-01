@@ -3,7 +3,7 @@
 #include "Utils.hpp"
 
 Game::Game(int maximum_rounds, char *config_path) {
-  current_round_ = 0;
+  current_round_ = 1;
   max_rounds_ = maximum_rounds;
   phase_ = Phase::START;
   player_a_ = new Player('A');
@@ -77,34 +77,84 @@ bool Game::isValidConfig(char *config_path) {
 
 void Game::start() {
   std::cout << "Welcome to OOPtimal Tactics!\nPlaying maximum of " << max_rounds_ << " round(s)!\n";
+  announceRound();
+  // Fix missing output
+}
+
+void Game::announceRound() const {
   std::cout << "\n";
   std::cout << "------------------\n";
   std::cout << "Round " << current_round_ << "/" << max_rounds_ << " starts!\n";
   std::cout << "------------------\n";
   std::cout << "\n";
+}
+
+void Game::printPlayerPrompt() {
+  // TODO: Optimize
+  if (phase_ == Phase::PLACEMENT) {
+    if (current_round_ % 2 == 0) {
+      active_player_ = player_b_;
+    } else {
+      active_player_ = player_a_;
+    }
+    std::cout << "Player " << active_player_->getId()
+            << ", you have " << active_player_->getChips() << " chip(s) left, "
+            "where and how do you want to place your chips?\n";
+  } else {
+    if (current_round_ % 2 == 0) {
+      active_player_ = player_a_;
+    } else {
+      active_player_ = player_b_;
+    }
+    std::cout << "Player " << active_player_->getId() << ", what do you want to do?\n";
+  }
+}
+
+void Game::execute(Command command) {
+  if (phase_ != Phase::START) {
+    if (command.isQuit()) {
+      phase_ = Phase::END;
+      endPhase();
+    } else if (command.getType() == CommandType::INFO) {
+      // TODO print Player info
+    } else if (command.getType() == CommandType::MAP) {
+      map_->setIsOutputActive(!map_->getIsOutputActive());
+    } else if (command.getType() == CommandType::PASS) {
+      // TODO Player does nothing
+    } else if (phase_ == Phase::PLACEMENT) {
+      placePhase(command);
+    } else if (phase_ == Phase::MOVEMENT) {
+      movePhase(command);
+    } else {
+      std::cout << "!!!Command not recognized\n";
+    }
+  } else {
+    placePhase(command);
+  }
+}
+
+void Game::placePhase(Command command) {
+  phase_ = Phase::PLACEMENT;
   std::cout << "------------------\n";
   std::cout << "Placement Phase\n";
   std::cout << "------------------\n";
   map_->printMap();
-
+  printPlayerPrompt();
+  // Player can execute place command here
 }
-void Game::execute(Command command) {
-  if (command.isQuit()) {
-    phase_ = Phase::END;
-  } else if (command.getType() == CommandType::INFO) {
-    // TODO print Player info
-  } else if (command.getType() == CommandType::MAP) {
-    map_->setIsOutputActive(!map_->getIsOutputActive());
-  } else if (command.getType() == CommandType::PASS) {
-    // TODO Player does nothing
-  } else if (command.getType() == CommandType::PLACE) {
-    // TODO:Place a chip
-  } else if (command.getType() == CommandType::MOVE) {
-    // TODO: Move a chip/player
-  } else {
-    // Command not implemented?
-    std::cout << "Sorry not sorry";
-  }
+
+void Game::movePhase(Command command) {
+  std::cout << "------------------\n";
+  std::cout << "Movement Phase\n";
+  std::cout << "------------------\n";
+  map_->printMap();
+}
+
+void Game::endPhase() {
+  std::cout << "------------------\n";
+  std::cout << "GAME END!\n";
+  std::cout << "\n";
+  // TODO Calculate points
 }
 
 bool Game::isRunning() {
