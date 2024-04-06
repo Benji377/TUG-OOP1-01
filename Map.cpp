@@ -152,19 +152,19 @@ int Map::getFieldsPerPlayer(Player player) {
   return fields_per_player;
 }
 
-bool Map::placeChip(Player &player, int amount, int column, int row) {
+bool Map::placeChip(Player player, int amount, int column, int row) {
   if (column < 0 || column >= getColumns() || row < 0 || row >= getRows()) {
     return false;
   }
   Field *field = getFields()[row][column];
-  if (field->getPlayer()->getId() != player.getId()) {
+  if (field->getIsWater() || amount < 0 || field->getPlayer()->getId() != player.getId()) {
     return false;
   }
   field->setChips(field->getChips() + amount);
   return true;
 }
 
-bool Map::moveChip(Player &player, int amount, int from_column, int from_row, int to_column, int to_row) {
+bool Map::moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row) {
   if (from_column < 0 || from_column >= getColumns() || from_row < 0 || from_row >= getRows() ||
       to_column < 0 || to_column >= getColumns() || to_row < 0 || to_row >= getRows()) {
     return false;
@@ -204,4 +204,12 @@ bool Map::moveChip(Player &player, int amount, int from_column, int from_row, in
     from_field->setPlayer(nullptr);
   }
   return true;
+}
+
+Map::~Map() {
+  for (int row_number = 0; row_number < getRows(); row_number++) {
+    for (int column_number = 0; column_number < getColumns(); column_number++) {
+      delete getFields()[row_number][column_number];
+    }
+  }
 }

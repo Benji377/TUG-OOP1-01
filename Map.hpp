@@ -38,16 +38,16 @@ public:
 
   int getFieldsPerPlayer(Player player);
 
-  bool placeChip(Player &player, int amount, int column, int row);
+  bool placeChip(Player player, int amount, int column, int row);
 
-  bool moveChip(Player &player, int amount, int from_column, int from_row, int to_column, int to_row);
+  bool moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row);
 
   // Constructors
   Map(char *config_path, Player *player_a, Player *player_b);
 
   Map(const Map &) = delete;
 
-  ~Map() = default;
+  ~Map();
 };
 
 #endif //MAP_HPP

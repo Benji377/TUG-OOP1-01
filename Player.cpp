@@ -3,8 +3,8 @@
 
 Player::Player(char id) {
   id_ = id;
-  chips_ = 0; // TODO
-  has_passed_ = false; // TODO
+  chips_ = 0;
+  has_passed_ = false;
 }
 
 char Player::getId() const {

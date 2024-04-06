@@ -43,7 +43,7 @@ Command::Command(std::vector<std::string> &input) {
 /// @return True if the Command object is a quit command, false otherwise
 //
 bool Command::isQuit() {
-  return type_ == CommandType::QUIT;
+  return getType() == CommandType::QUIT;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,6 @@
 #include "Command.hpp"
 
 enum class Phase {
-  START,
   PLACEMENT,
   MOVEMENT,
   END
@@ -23,73 +22,45 @@ private:
   Player *active_player_;
 
   void announceRound();
-
   void printPlacePhase();
-
   void printMovePhase();
-
   void printPlayerPrompt();
-
   void endPhase();
-
   void passCommand();
-
   void placeCommand(Command command);
-
   void moveCommand(Command command);
-
   void calculateChips();
-
   void calculatePoints();
+  void changePlayer();
 
 public:
   // Functions
   Map *getMap();
-
   void setMap(Map *map);
-
   Player *getPlayerA();
-
   void setPlayerA(Player *playerA);
-
   Player *getPlayerB();
-
   void setPlayerB(Player *playerB);
-
   int getCurrentRound();
-
   void setCurrentRound(int currentRound);
-
   int getMaxRounds();
-
   void setMaxRounds(int maxRounds);
-
   Phase getPhase();
-
   void setPhase(Phase phase);
-
   Player *getActivePlayer();
-
   void setActivePlayer(Player *activePlayer);
-
   static int getRoundNumber(const char *string);
-
   static bool isValidRoundNumber(int rounds);
-
   static bool isValidConfig(char *config_path);
-
   void start();
-
   void execute(Command command);
-
   bool isRunning();
 
   // Constructors
   Game(int maximum_rounds, char *config_path);
-
   Game(const Game &) = delete;
-
   ~Game();
+
 };
 
 #endif //GAME_HPP
