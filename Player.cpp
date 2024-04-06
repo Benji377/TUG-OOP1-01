@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Player.hpp"
 
 Player::Player(char id) {
@@ -6,25 +7,32 @@ Player::Player(char id) {
   has_passed_ = false; // TODO
 }
 
-char Player::getId() {
+char Player::getId() const {
   return id_;
 }
 void Player::setId(char id) {
   id_ = id;
 }
 
-int Player::getChips() {
+int Player::getChips() const {
   return chips_;
 }
 void Player::setChips(int chips) {
   chips_ = chips;
 }
 
-bool Player::getHasPassed() {
+bool Player::getHasPassed() const {
   return has_passed_;
 }
 void Player::setHasPassed(bool has_passed) {
   has_passed_ = has_passed;
+}
+
+void Player::printPlayerInfo(int claimed_fields) const {
+  std::cout << "Player " << id_ << ":\n";
+  std::cout << "You have " << chips_ << " chip(s) saved!\n";
+  std::cout << "You own " << claimed_fields << " field(s)!\n";
+  std::cout << "\n";
 }
 
 Player &Player::operator=(const Player &) {

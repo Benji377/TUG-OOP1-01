@@ -61,7 +61,7 @@ void Game::setActivePlayer(Player *activePlayer) {
   active_player_ = activePlayer;
 }
 
-int Game::getRoundNumber(char *string) {
+int Game::getRoundNumber(const char *string) {
   int round_number = -1;
   Utils::decimalStringToInt(string, round_number);
   return round_number;
@@ -78,7 +78,10 @@ bool Game::isValidConfig(char *config_path) {
 void Game::start() {
   std::cout << "Welcome to OOPtimal Tactics!\nPlaying maximum of " << max_rounds_ << " round(s)!\n";
   announceRound();
-  // Fix missing output
+  calculateChips();
+  setPhase(Phase::PLACEMENT);
+  printPlacePhase();
+  printPlayerPrompt();
 }
 
 void Game::announceRound() const {
@@ -88,6 +91,7 @@ void Game::announceRound() const {
   std::cout << "------------------\n";
   std::cout << "\n";
 }
+
 
 void Game::printPlayerPrompt() {
   // TODO: Optimize
@@ -111,39 +115,33 @@ void Game::printPlayerPrompt() {
 }
 
 void Game::execute(Command command) {
-  if (phase_ != Phase::START) {
     if (command.isQuit()) {
       phase_ = Phase::END;
       endPhase();
     } else if (command.getType() == CommandType::INFO) {
-      // TODO print Player info
+      active_player_->printPlayerInfo(map_->getFieldsPerPlayer(*active_player_));
     } else if (command.getType() == CommandType::MAP) {
       map_->setIsOutputActive(!map_->getIsOutputActive());
     } else if (command.getType() == CommandType::PASS) {
-      // TODO Player does nothing
+      active_player_->setHasPassed(true);
     } else if (phase_ == Phase::PLACEMENT) {
-      placePhase(command);
+      // TODO place command
     } else if (phase_ == Phase::MOVEMENT) {
-      movePhase(command);
+      // TODO move command
     } else {
       std::cout << "!!!Command not recognized\n";
     }
-  } else {
-    placePhase(command);
-  }
 }
 
-void Game::placePhase(Command command) {
-  phase_ = Phase::PLACEMENT;
+void Game::printPlacePhase() {
   std::cout << "------------------\n";
   std::cout << "Placement Phase\n";
   std::cout << "------------------\n";
   map_->printMap();
-  printPlayerPrompt();
   // Player can execute place command here
 }
 
-void Game::movePhase(Command command) {
+void Game::printMovePhase() {
   std::cout << "------------------\n";
   std::cout << "Movement Phase\n";
   std::cout << "------------------\n";
@@ -154,10 +152,29 @@ void Game::endPhase() {
   std::cout << "------------------\n";
   std::cout << "GAME END!\n";
   std::cout << "\n";
-  // TODO Calculate points
+  calculatePoints();
 }
 
 bool Game::isRunning() {
   return phase_ != Phase::END;
 }
 
+void Game::calculateChips() {
+  // The number of chips gained is calculated by dividing
+  // the number of fields currently claimed by the player by three and rounding up
+  int player_a_chips = map_->getFieldsPerPlayer(*player_a_);
+  int player_b_chips = map_->getFieldsPerPlayer(*player_b_);
+  player_a_->setChips((player_a_chips / 3) + (player_a_chips % 3 != 0));
+  player_b_->setChips((player_b_chips / 3) + (player_b_chips % 3 != 0));
+}
+
+void Game::calculatePoints() {
+  // TODO Calculate points
+}
+
+
+Game::~Game() {
+  delete player_a_;
+  delete player_b_;
+  delete map_;
+}

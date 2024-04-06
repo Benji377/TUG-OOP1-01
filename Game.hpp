@@ -22,10 +22,12 @@ private:
   Phase phase_;
   Player* active_player_;
   void announceRound() const;
-  void placePhase(Command command);
-  void movePhase(Command command);
+  void printPlacePhase();
+  void printMovePhase();
   void printPlayerPrompt();
   void endPhase();
+  void calculateChips();
+  void calculatePoints();
 public:
   // Functions
   Map *getMap();
@@ -43,7 +45,7 @@ public:
   Player *getActivePlayer();
   void setActivePlayer(Player *activePlayer);
 
-  static int getRoundNumber(char* string);
+  static int getRoundNumber(const char* string);
   static bool isValidRoundNumber(int rounds);
   static bool isValidConfig(char* config_path);
   void start();
@@ -52,7 +54,7 @@ public:
   // Constructors
   Game(int maximum_rounds, char* config_path);
   Game(const Game&) = delete;
-  ~Game() = default;
+  ~Game();
 };
 
 #endif //GAME_HPP

@@ -40,7 +40,18 @@ void Map::setIsOutputActive(bool output_active) {
   output_active_ = output_active;
 }
 
-std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* player_a, Player* player_b) {
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// This function creates a 2D vector of fields based on the config file. It reads the config file line by line and
+/// creates a field object for each character in the line. The function is private and used by the constructor.
+///
+/// @param config_path The path to the config file
+/// @param player_a The first player
+/// @param player_b The second player
+///
+/// @return A 2D vector of fields parsed from the config file
+//
+std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* player_a, Player* player_b) const {
   std::string line;
   std::vector<std::vector<Field*>> fields(rows_, std::vector<Field*> (columns_));
   for (int line_number = 0; line_number < rows_; line_number++) {
@@ -54,6 +65,18 @@ std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* 
   return fields;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// This function creates a field object based on the character of the field in the config file. If the field is claimed
+/// by a player, the player object is set. If the field is water, the is_water flag is set. If the field is empty, the
+/// field is created without a player and without chips. The function is private and used by createFieldMap.
+///
+/// @param field_char The character of the field in the config file
+/// @param player_a The first player
+/// @param player_b The second player
+///
+/// @return a field object depending on the field_char
+//
 Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
   switch (field_char) {
     case 'a':
@@ -67,6 +90,12 @@ Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
   }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// This function prints the map to the console. It iterates over all fields and prints the player id and the amount of
+/// chips on the field. If the field is water, it prints a wave symbol. If the field is empty, it prints an empty space.
+///
+//
 void Map::printMap() {
   if (!output_active_) {
     return;
@@ -95,4 +124,26 @@ void Map::printMap() {
     std::cout << "\n";
   }
   std::cout << "\n";
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+///
+/// This function counts the amount of fields a player has claimed by iterating over all fields and checking if
+/// the player is the owner of the field.
+///
+/// @param player The player to count the fields for
+///
+/// @return the amount of fields the player has claimed
+//
+int Map::getFieldsPerPlayer(Player player) {
+int fields_per_player = 0;
+  for (int row_number = 0; row_number < rows_; row_number++) {
+    for (int column_number = 0; column_number < columns_; column_number++) {
+      Field* field = fields_[row_number][column_number];
+      if (field->getPlayer() != nullptr && field->getPlayer()->getId() == player.getId()) {
+        fields_per_player++;
+      }
+    }
+  }
+  return fields_per_player;
 }
