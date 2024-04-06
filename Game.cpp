@@ -177,9 +177,16 @@ void Game::passCommand() {
   } else {
     setActivePlayer(getPlayerA());
   }
-  if (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) {
+  if ((getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) ||
+          (getPlayerA()->getChips() == 0 && getPlayerB()->getHasPassed()) ||
+          (getPlayerB()->getChips() == 0 && getPlayerA()->getHasPassed())) {
     if (getPhase() == Phase::PLACEMENT) {
       setPhase(Phase::MOVEMENT);
+      if (getCurrentRound() % 2 == 0) {
+        setActivePlayer(getPlayerA());
+      } else {
+        setActivePlayer(getPlayerB());
+      }
       printMovePhase();
     } else {
       if (getCurrentRound()+1 <= getMaxRounds()) {

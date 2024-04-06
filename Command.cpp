@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 #include "Command.hpp"
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -97,6 +98,8 @@ void Command::setParameters(std::vector<std::string> &parameters) {
 /// @return The CommandType that the string represents or INVALID if the string is not a valid CommandType
 //
 CommandType Command::parseType(std::string &input) {
+  // Convert the input to lowercase
+  std::transform(input.begin(), input.end(), input.begin(), ::tolower);
   if (input == "place") {
     return CommandType::PLACE;
   } else if (input == "pass") {

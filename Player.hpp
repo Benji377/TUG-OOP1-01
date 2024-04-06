@@ -9,25 +9,17 @@ private:
 public:
   // Functions
   char getId() const;
-
   void setId(char id);
-
   int getChips() const;
-
   void setChips(int chips);
-
   bool getHasPassed() const;
-
   void setHasPassed(bool has_passed);
+  void printPlayerInfo(int claimed_fields) const;
 
   // Constructor
   explicit Player(char id);
-
   ~Player() = default;
-
   Player &operator=(const Player &);
-
-  void printPlayerInfo(int claimed_fields) const;
 };
 
 #endif //PLAYER_HPP

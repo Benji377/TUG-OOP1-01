@@ -25,24 +25,16 @@ private:
 public:
   // Functions
   bool isQuit();
-
   CommandType getType();
-
   std::vector<std::string> &getParameters();
-
   void setType(CommandType type);
-
   void setParameters(std::vector<std::string> &parameters);
 
   // Constructors
   explicit Command(std::vector<std::string> &input);
-
   explicit Command(CommandType type);
-
   Command(Command &command);
-
   Command &operator=(const Command &);
-
   ~Command() = default;
 };
 
