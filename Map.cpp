@@ -51,12 +51,12 @@ void Map::setIsOutputActive(bool output_active) {
 ///
 /// @return A 2D vector of fields parsed from the config file
 //
-std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* player_a, Player* player_b) const {
+std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* player_a, Player* player_b) {
   std::string line;
-  std::vector<std::vector<Field*>> fields(rows_, std::vector<Field*> (columns_));
-  for (int line_number = 0; line_number < rows_; line_number++) {
+  std::vector<std::vector<Field*>> fields(getRows(), std::vector<Field*> (getColumns()));
+  for (int line_number = 0; line_number < getRows(); line_number++) {
     line = Utils::readConfigLine(config_path, line_number+3);
-    for (int field_number = 0; field_number < columns_; field_number++) {
+    for (int field_number = 0; field_number < getColumns(); field_number++) {
       char field_char = line.at(field_number);
       // TODO: Free space after field has been deleted
       fields[line_number][field_number] = createField(field_char, player_a, player_b);
@@ -97,11 +97,11 @@ Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
 ///
 //
 void Map::printMap() {
-  if (!output_active_) {
+  if (!getIsOutputActive()) {
     return;
   }
   // Print first row
-  for (int column_number = 0; column_number <= columns_; column_number++) {
+  for (int column_number = 0; column_number <= getColumns(); column_number++) {
     if (column_number == 0) {
       std::cout << "  ";
     } else {
@@ -109,10 +109,10 @@ void Map::printMap() {
     }
   }
   std::cout << "\n";
-  for (int row_number = 0; row_number < rows_; row_number++) {
+  for (int row_number = 0; row_number < getRows(); row_number++) {
     std::cout << row_number+1 << " ";
-    for (int column_number = 0; column_number < columns_; column_number++) {
-      Field* field = fields_[row_number][column_number];
+    for (int column_number = 0; column_number < getColumns(); column_number++) {
+      Field* field = getFields()[row_number][column_number];
       if (field->getPlayer() != nullptr) {
         std::cout << "|" << field->getPlayer()->getId() << " " << field->getChips();
       } else if (field->getIsWater()) {
@@ -137,13 +137,66 @@ void Map::printMap() {
 //
 int Map::getFieldsPerPlayer(Player player) {
 int fields_per_player = 0;
-  for (int row_number = 0; row_number < rows_; row_number++) {
-    for (int column_number = 0; column_number < columns_; column_number++) {
-      Field* field = fields_[row_number][column_number];
+  for (int row_number = 0; row_number < getRows(); row_number++) {
+    for (int column_number = 0; column_number < getColumns(); column_number++) {
+      Field* field = getFields()[row_number][column_number];
       if (field->getPlayer() != nullptr && field->getPlayer()->getId() == player.getId()) {
         fields_per_player++;
       }
     }
   }
   return fields_per_player;
+}
+
+bool Map::placeChip(Player &player, int amount, int column, int row) {
+  if (column < 0 || column >= getColumns() || row < 0 || row >= getRows()) {
+    return false;
+  }
+  Field* field = getFields()[row][column];
+  if (field->getPlayer()->getId() != player.getId()) {
+    return false;
+  }
+  field->setChips(field->getChips() + amount);
+  return true;
+}
+
+bool Map::moveChip(Player &player, int amount, int from_column, int from_row, int to_column, int to_row) {
+  if (from_column < 0 || from_column >= getColumns() || from_row < 0 || from_row >= getRows() ||
+      to_column < 0 || to_column >= getColumns() || to_row < 0 || to_row >= getRows()) {
+    return false;
+  }
+  // Player can only move chips to fields next to them
+  if (abs(from_column - to_column) > 1 || abs(from_row - to_row) > 1) {
+    return false;
+  }
+
+  Field* from_field = getFields()[from_row][from_column];
+  Field* to_field = getFields()[to_row][to_column];
+
+  if (to_field->getIsWater() || amount < 0 || amount > from_field->getChips()) {
+    return false;
+  }
+
+  if (to_field->getPlayer() == nullptr) {
+    to_field->setPlayer(from_field->getPlayer());
+    to_field->setChips(amount);
+  } else if (to_field->getPlayer()->getId() == player.getId()) {
+    to_field->setChips(to_field->getChips() + amount);
+  } else {
+    int new_destination_field_amount = to_field->getChips() + 1 - amount;
+    if (new_destination_field_amount == 0) {
+      to_field->setPlayer(nullptr);
+    } else if (new_destination_field_amount < 0) {
+      to_field->setChips(new_destination_field_amount * -1);
+      to_field->setPlayer(from_field->getPlayer());
+    } else {
+      to_field->setChips(new_destination_field_amount);
+
+    }
+  }
+  from_field->setChips(from_field->getChips() - amount);
+
+  if (from_field->getChips() == 0) {
+    from_field->setPlayer(nullptr);
+  }
 }

@@ -21,11 +21,14 @@ private:
   int max_rounds_;
   Phase phase_;
   Player* active_player_;
-  void announceRound() const;
+  void announceRound();
   void printPlacePhase();
   void printMovePhase();
   void printPlayerPrompt();
   void endPhase();
+  void passCommand();
+  void placeCommand(Command command);
+  void moveCommand(Command command);
   void calculateChips();
   void calculatePoints();
 public:

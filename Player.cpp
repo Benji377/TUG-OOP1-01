@@ -29,8 +29,8 @@ void Player::setHasPassed(bool has_passed) {
 }
 
 void Player::printPlayerInfo(int claimed_fields) const {
-  std::cout << "Player " << id_ << ":\n";
-  std::cout << "You have " << chips_ << " chip(s) saved!\n";
+  std::cout << "Player " << getId() << ":\n";
+  std::cout << "You have " << getChips() << " chip(s) saved!\n";
   std::cout << "You own " << claimed_fields << " field(s)!\n";
   std::cout << "\n";
 }
