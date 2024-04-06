@@ -199,4 +199,5 @@ bool Map::moveChip(Player &player, int amount, int from_column, int from_row, in
   if (from_field->getChips() == 0) {
     from_field->setPlayer(nullptr);
   }
+  return true;
 }
