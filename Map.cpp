@@ -174,6 +174,12 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
     return false;
   }
 
+  // Player can only move chips from fields they own
+  if (getFields()[from_row][from_column]->getPlayer() == nullptr ||
+      getFields()[from_row][from_column]->getPlayer()->getId() != player.getId()) {
+    return false;
+  }
+
   Field *from_field = getFields()[from_row][from_column];
   Field *to_field = getFields()[to_row][to_column];
 

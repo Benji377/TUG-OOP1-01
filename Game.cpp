@@ -2,6 +2,11 @@
 #include "Game.hpp"
 #include "Utils.hpp"
 
+// TODO
+// - The chips must be carried from round to round and not resetted, as it is now
+// - Error messages are missing
+// - Clean up the code
+
 Game::Game(int maximum_rounds, char *config_path) {
   current_round_ = 1;
   max_rounds_ = maximum_rounds;
@@ -177,9 +182,21 @@ void Game::passCommand() {
   } else {
     setActivePlayer(getPlayerA());
   }
-  if ((getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) ||
-          (getPlayerA()->getChips() == 0 && getPlayerB()->getHasPassed()) ||
-          (getPlayerB()->getChips() == 0 && getPlayerA()->getHasPassed())) {
+
+  if ((getPlayerA()->getChips() == 0 && getPlayerB()->getHasPassed()) ||
+  (getPlayerB()->getChips() == 0 && getPlayerA()->getHasPassed())) {
+    if (getPhase() == Phase::PLACEMENT) {
+      setPhase(Phase::MOVEMENT);
+      if (getCurrentRound() % 2 == 0) {
+        setActivePlayer(getPlayerA());
+      } else {
+        setActivePlayer(getPlayerB());
+      }
+      printMovePhase();
+    }
+  }
+
+  if (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) {
     if (getPhase() == Phase::PLACEMENT) {
       setPhase(Phase::MOVEMENT);
       if (getCurrentRound() % 2 == 0) {
@@ -246,6 +263,8 @@ void Game::moveCommand(Command command) {
                                to_field_column, to_field_row)) {
           getMap()->printMap();
           changePlayer();
+        } else {
+          std::cout << "[ERROR] Invalid origin!\n";
         }
       }
     }
