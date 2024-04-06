@@ -122,7 +122,7 @@ CommandType Command::parseType(std::string &input) {
 ///
 /// @return The Command object that was assigned
 //
-Command &Command::operator=(const Command&) {
+Command &Command::operator=(const Command &) {
   return *this;
 }
 

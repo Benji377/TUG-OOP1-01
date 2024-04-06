@@ -3,7 +3,7 @@
 #include <utility>
 #include <iostream>
 
-Map::Map(char* config_path, Player* player_a, Player* player_b) {
+Map::Map(char *config_path, Player *player_a, Player *player_b) {
   std::string dimensions = Utils::readConfigLine(config_path, 2);
   std::vector<std::string> split_dimensions = Utils::splitString(dimensions, "_");
   columns_ = stoi(split_dimensions.at(0));
@@ -15,6 +15,7 @@ Map::Map(char* config_path, Player* player_a, Player* player_b) {
 int Map::getColumns() {
   return columns_;
 }
+
 void Map::setColumns(int columns) {
   columns_ = columns;
 }
@@ -22,20 +23,23 @@ void Map::setColumns(int columns) {
 int Map::getRows() {
   return rows_;
 }
+
 void Map::setRows(int rows) {
   rows_ = rows;
 }
 
-std::vector<std::vector<Field*>> Map::getFields() {
+std::vector<std::vector<Field *>> Map::getFields() {
   return fields_;
 }
-void Map::setFields(std::vector<std::vector<Field*>> fields) {
+
+void Map::setFields(std::vector<std::vector<Field *>> fields) {
   fields_ = std::move(fields);
 }
 
 bool Map::getIsOutputActive() {
   return output_active_;
 }
+
 void Map::setIsOutputActive(bool output_active) {
   output_active_ = output_active;
 }
@@ -51,11 +55,11 @@ void Map::setIsOutputActive(bool output_active) {
 ///
 /// @return A 2D vector of fields parsed from the config file
 //
-std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* player_a, Player* player_b) {
+std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player *player_a, Player *player_b) {
   std::string line;
-  std::vector<std::vector<Field*>> fields(getRows(), std::vector<Field*> (getColumns()));
+  std::vector<std::vector<Field *>> fields(getRows(), std::vector<Field *>(getColumns()));
   for (int line_number = 0; line_number < getRows(); line_number++) {
-    line = Utils::readConfigLine(config_path, line_number+3);
+    line = Utils::readConfigLine(config_path, line_number + 3);
     for (int field_number = 0; field_number < getColumns(); field_number++) {
       char field_char = line.at(field_number);
       // TODO: Free space after field has been deleted
@@ -77,7 +81,7 @@ std::vector<std::vector<Field*>> Map::createFieldMap(char* config_path, Player* 
 ///
 /// @return a field object depending on the field_char
 //
-Field* Map::createField(char field_char, Player* player_a, Player* player_b) {
+Field *Map::createField(char field_char, Player *player_a, Player *player_b) {
   switch (field_char) {
     case 'a':
       return new Field(player_a, 1, false);
@@ -110,9 +114,9 @@ void Map::printMap() {
   }
   std::cout << "\n";
   for (int row_number = 0; row_number < getRows(); row_number++) {
-    std::cout << row_number+1 << " ";
+    std::cout << row_number + 1 << " ";
     for (int column_number = 0; column_number < getColumns(); column_number++) {
-      Field* field = getFields()[row_number][column_number];
+      Field *field = getFields()[row_number][column_number];
       if (field->getPlayer() != nullptr) {
         std::cout << "|" << field->getPlayer()->getId() << " " << field->getChips();
       } else if (field->getIsWater()) {
@@ -136,10 +140,10 @@ void Map::printMap() {
 /// @return the amount of fields the player has claimed
 //
 int Map::getFieldsPerPlayer(Player player) {
-int fields_per_player = 0;
+  int fields_per_player = 0;
   for (int row_number = 0; row_number < getRows(); row_number++) {
     for (int column_number = 0; column_number < getColumns(); column_number++) {
-      Field* field = getFields()[row_number][column_number];
+      Field *field = getFields()[row_number][column_number];
       if (field->getPlayer() != nullptr && field->getPlayer()->getId() == player.getId()) {
         fields_per_player++;
       }
@@ -152,7 +156,7 @@ bool Map::placeChip(Player &player, int amount, int column, int row) {
   if (column < 0 || column >= getColumns() || row < 0 || row >= getRows()) {
     return false;
   }
-  Field* field = getFields()[row][column];
+  Field *field = getFields()[row][column];
   if (field->getPlayer()->getId() != player.getId()) {
     return false;
   }
@@ -170,8 +174,8 @@ bool Map::moveChip(Player &player, int amount, int from_column, int from_row, in
     return false;
   }
 
-  Field* from_field = getFields()[from_row][from_column];
-  Field* to_field = getFields()[to_row][to_column];
+  Field *from_field = getFields()[from_row][from_column];
+  Field *to_field = getFields()[to_row][to_column];
 
   if (to_field->getIsWater() || amount < 0 || amount > from_field->getChips()) {
     return false;

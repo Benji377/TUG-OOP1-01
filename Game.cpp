@@ -15,6 +15,7 @@ Game::Game(int maximum_rounds, char *config_path) {
 Map *Game::getMap() {
   return map_;
 }
+
 void Game::setMap(Map *map) {
   map_ = map;
 }
@@ -22,6 +23,7 @@ void Game::setMap(Map *map) {
 Player *Game::getPlayerA() {
   return player_a_;
 }
+
 void Game::setPlayerA(Player *playerA) {
   player_a_ = playerA;
 }
@@ -29,6 +31,7 @@ void Game::setPlayerA(Player *playerA) {
 Player *Game::getPlayerB() {
   return player_b_;
 }
+
 void Game::setPlayerB(Player *playerB) {
   player_b_ = playerB;
 }
@@ -36,6 +39,7 @@ void Game::setPlayerB(Player *playerB) {
 int Game::getCurrentRound() {
   return current_round_;
 }
+
 void Game::setCurrentRound(int currentRound) {
   current_round_ = currentRound;
 }
@@ -43,6 +47,7 @@ void Game::setCurrentRound(int currentRound) {
 int Game::getMaxRounds() {
   return max_rounds_;
 }
+
 void Game::setMaxRounds(int maxRounds) {
   max_rounds_ = maxRounds;
 }
@@ -50,6 +55,7 @@ void Game::setMaxRounds(int maxRounds) {
 Phase Game::getPhase() {
   return phase_;
 }
+
 void Game::setPhase(Phase phase) {
   phase_ = phase;
 }
@@ -57,6 +63,7 @@ void Game::setPhase(Phase phase) {
 Player *Game::getActivePlayer() {
   return active_player_;
 }
+
 void Game::setActivePlayer(Player *activePlayer) {
   active_player_ = activePlayer;
 }
@@ -102,8 +109,8 @@ void Game::printPlayerPrompt() {
       setActivePlayer(getPlayerA());
     }
     std::cout << "Player " << getActivePlayer()->getId()
-            << ", you have " << getActivePlayer()->getChips() << " chip(s) left, "
-            "where and how do you want to place your chips?\n";
+              << ", you have " << getActivePlayer()->getChips() << " chip(s) left, "
+                                                                   "where and how do you want to place your chips?\n";
   } else {
     if (getCurrentRound() % 2 == 0) {
       setActivePlayer(getPlayerA());
@@ -122,27 +129,27 @@ void Game::execute(Command command) {
     }
     if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 && getMap()->getFieldsPerPlayer(*getPlayerB()) == 0) {
       setPhase(Phase::END);
+      std::cout << "No fields claimed, game ends!\n";
       endPhase();
     }
   }
 
-    if (command.isQuit()) {
-      setPhase(Phase::END);
-      endPhase();
-    } else if (command.getType() == CommandType::INFO) {
-      getActivePlayer()->printPlayerInfo(getMap()->getFieldsPerPlayer(*getActivePlayer()));
-    } else if (command.getType() == CommandType::MAP) {
-      getMap()->setIsOutputActive(!getMap()->getIsOutputActive());
-      getMap()->printMap(); // The function will print the map if the output is active and return otherwise
-    } else if (command.getType() == CommandType::PASS) {
-      passCommand();
-    } else if (getPhase() == Phase::PLACEMENT) {
-      placeCommand(command);
-    } else if (getPhase() == Phase::MOVEMENT) {
-      moveCommand(command);
-    } else {
-      std::cout << "!!!Command not recognized\n";
-    }
+  if (command.isQuit()) {
+    setPhase(Phase::END);
+  } else if (command.getType() == CommandType::INFO) {
+    getActivePlayer()->printPlayerInfo(getMap()->getFieldsPerPlayer(*getActivePlayer()));
+  } else if (command.getType() == CommandType::MAP) {
+    getMap()->setIsOutputActive(!getMap()->getIsOutputActive());
+    getMap()->printMap(); // The function will print the map if the output is active and return otherwise
+  } else if (command.getType() == CommandType::PASS) {
+    passCommand();
+  } else if (getPhase() == Phase::PLACEMENT) {
+    placeCommand(command);
+  } else if (getPhase() == Phase::MOVEMENT) {
+    moveCommand(command);
+  } else {
+    std::cout << "!!!Command not recognized\n";
+  }
   printPlayerPrompt();
 }
 
@@ -229,13 +236,13 @@ void Game::moveCommand(Command command) {
           Utils::decimalStringToInt(command.getParameters()[2], from_field_row) &&
           Utils::decimalStringToInt(command.getParameters()[3], to_field_column) &&
           Utils::decimalStringToInt(command.getParameters()[4], to_field_row)) {
-          if (getMap()->moveChip(*getActivePlayer(), amount, from_field_column, from_field_row,
-                                 to_field_column, to_field_row)) {
-            getMap()->printMap();
-            passCommand();
-          } else {
-            std::cout << "Invalid field\n";
-          }
+        if (getMap()->moveChip(*getActivePlayer(), amount, from_field_column, from_field_row,
+                               to_field_column, to_field_row)) {
+          getMap()->printMap();
+          passCommand();
+        } else {
+          std::cout << "Invalid field\n";
+        }
       } else {
         std::cout << "Invalid parameters\n";
       }
@@ -266,8 +273,10 @@ void Game::calculateChips() {
 }
 
 void Game::calculatePoints() {
-  std::cout << "Player " << getPlayerA()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerA()) << " field(s)!\n";
-  std::cout << "Player " << getPlayerB()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerB()) << " field(s)!\n";
+  std::cout << "Player " << getPlayerA()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerA())
+            << " field(s)!\n";
+  std::cout << "Player " << getPlayerB()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerB())
+            << " field(s)!\n";
   if (getMap()->getFieldsPerPlayer(*getPlayerA()) > getMap()->getFieldsPerPlayer(*getPlayerB())) {
     std::cout << "\n";
     std::cout << "Congratulations, Player " << getPlayerA()->getId() << "! You won!\n";

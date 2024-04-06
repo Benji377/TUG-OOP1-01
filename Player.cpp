@@ -10,6 +10,7 @@ Player::Player(char id) {
 char Player::getId() const {
   return id_;
 }
+
 void Player::setId(char id) {
   id_ = id;
 }
@@ -17,6 +18,7 @@ void Player::setId(char id) {
 int Player::getChips() const {
   return chips_;
 }
+
 void Player::setChips(int chips) {
   chips_ = chips;
 }
@@ -24,6 +26,7 @@ void Player::setChips(int chips) {
 bool Player::getHasPassed() const {
   return has_passed_;
 }
+
 void Player::setHasPassed(bool has_passed) {
   has_passed_ = has_passed;
 }
