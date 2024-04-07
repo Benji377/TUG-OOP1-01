@@ -146,7 +146,7 @@ void Game::execute(Command command) {
       setActivePlayer(getPlayerB());
     }
   }
-  if (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) {
+  if ((getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
     setPhase(Phase::END);
   } else {
     printPlayerPrompt();
@@ -233,19 +233,27 @@ void Game::placeCommand(Command command) {
         // Fixing the 1-based index to 0-based index
         field_column--;
         field_row--;
-        if (amount > 0 && amount <= getActivePlayer()->getChips()) {
-          if (getMap()->placeChip(*getActivePlayer(), amount, field_column, field_row)) {
-            getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
-            getMap()->printMap();
-            changePlayer();
+        if (amount > 0) {
+          if (amount <= getActivePlayer()->getChips()) {
+            if (getMap()->placeChip(*getActivePlayer(), amount, field_column, field_row)) {
+              getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
+              getMap()->printMap();
+              changePlayer();
+            } else {
+              std::cout << "[ERROR] Invalid field!\n";
+            }
           } else {
-            std::cout << "[ERROR] Invalid field!\n";
+            std::cout << "[ERROR] Invalid amount! Must be a number <= chips in player inventory!\n";
           }
         } else {
-          std::cout << "[ERROR] Invalid amount! Must be a number <= chips in player inventory!\n";
+          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
         }
       } else {
-        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+        if (Utils::decimalStringToInt(command.getParameters()[0], amount)) {
+          std::cout << "[ERROR] Invalid field!\n";
+        } else {
+          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+        }
       }
     }
   } else if (command.getType() == CommandType::MOVE) {
@@ -257,11 +265,13 @@ void Game::moveCommand(Command command) {
   if (command.getType() == CommandType::MOVE) {
     if (command.getParameters().size() == 5) {
       int amount, from_field_column, from_field_row, to_field_column, to_field_row;
-      if (Utils::decimalStringToInt(command.getParameters()[0], amount) &&
-          Utils::decimalStringToInt(command.getParameters()[1], from_field_column) &&
-          Utils::decimalStringToInt(command.getParameters()[2], from_field_row) &&
-          Utils::decimalStringToInt(command.getParameters()[3], to_field_column) &&
-          Utils::decimalStringToInt(command.getParameters()[4], to_field_row)) {
+      bool amount_valid, from_field_column_valid, from_field_row_valid, to_field_column_valid, to_field_row_valid;
+      amount_valid = Utils::decimalStringToInt(command.getParameters()[0], amount);
+      from_field_column_valid = Utils::decimalStringToInt(command.getParameters()[1], from_field_column);
+      from_field_row_valid = Utils::decimalStringToInt(command.getParameters()[2], from_field_row);
+      to_field_column_valid = Utils::decimalStringToInt(command.getParameters()[3], to_field_column);
+      to_field_row_valid = Utils::decimalStringToInt(command.getParameters()[4], to_field_row);
+      if (amount_valid && from_field_column_valid && from_field_row_valid && to_field_column_valid && to_field_row_valid) {
         // Fixing the 1-based index to 0-based index
         from_field_column--;
         from_field_row--;
@@ -271,9 +281,19 @@ void Game::moveCommand(Command command) {
                                to_field_column, to_field_row)) {
           getMap()->printMap();
           changePlayer();
+          if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) == 0) {
+            setPhase(Phase::END);
+            endPhase();
+          }
         }
       } else {
-        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+        if (!amount_valid || amount <= 0) {
+          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+        } else if (!from_field_column_valid || !from_field_row_valid) {
+          std::cout << "[ERROR] Invalid origin!\n";
+        } else {
+          std::cout << "[ERROR] Invalid destination!\n";
+        }
       }
     }
   } else if (command.getType() == CommandType::PLACE){
