@@ -87,8 +87,6 @@ void Game::start() {
   announceRound();
   calculateChips();
   printPlacePhase();
-  // First player is always Player A, since the game starts with Round 1
-  setActivePlayer(getPlayerA()); // TODO: Might remove this line
   printPlayerPrompt();
 }
 
@@ -157,6 +155,7 @@ bool Game::isRunning() {
 void Game::execute(Command command) {
   if (command.isQuit()) {
     setPhase(Phase::END);
+    return;
   } else if (command.getType() == CommandType::INFO) {
     getActivePlayer()->printPlayerInfo(getMap()->getFieldsPerPlayer(*getActivePlayer()));
   } else if (command.getType() == CommandType::MAP) {
@@ -243,6 +242,8 @@ void Game::placeCommand(Command command) {
           std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
         }
       }
+    } else {
+      std::cout << "[ERROR] Invalid command! Must have 3 parameters!\n";
     }
   } else if (command.getType() == CommandType::MOVE) {
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
@@ -279,6 +280,8 @@ void Game::moveCommand(Command command) {
           std::cout << "[ERROR] Invalid destination!\n";
         }
       }
+    } else {
+      std::cout << "[ERROR] Invalid command! Must have 5 parameters!\n";
     }
   } else if (command.getType() == CommandType::PLACE){
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
