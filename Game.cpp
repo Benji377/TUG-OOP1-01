@@ -134,7 +134,7 @@ void Game::execute(Command command) {
   } else if (getPhase() == Phase::MOVEMENT) {
     moveCommand(command);
   } else {
-    std::cout << "!!!Command not recognized\n";
+    std::cout << "[ERROR] Entered command not found!\n";
   }
 
   if (getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0) {
@@ -238,10 +238,18 @@ void Game::placeCommand(Command command) {
             getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
             getMap()->printMap();
             changePlayer();
+          } else {
+            std::cout << "[ERROR] Invalid field!\n";
           }
+        } else {
+          std::cout << "[ERROR] Invalid amount! Must be a number <= chips in player inventory!\n";
         }
+      } else {
+        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       }
     }
+  } else {
+    std::cout << "[ERROR] Entered command is not valid in this phase!\n";
   }
 }
 
@@ -263,11 +271,13 @@ void Game::moveCommand(Command command) {
                                to_field_column, to_field_row)) {
           getMap()->printMap();
           changePlayer();
-        } else {
-          std::cout << "[ERROR] Invalid origin!\n";
         }
+      } else {
+        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       }
     }
+  } else {
+    std::cout << "[ERROR] Entered command is not valid in this phase!\n";
   }
 }
 

@@ -165,25 +165,39 @@ bool Map::placeChip(Player player, int amount, int column, int row) {
 }
 
 bool Map::moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row) {
-  if (from_column < 0 || from_column >= getColumns() || from_row < 0 || from_row >= getRows() ||
-      to_column < 0 || to_column >= getColumns() || to_row < 0 || to_row >= getRows()) {
-    return false;
-  }
-  // Player can only move chips to fields next to them
-  if (abs(from_column - to_column) > 1 || abs(from_row - to_row) > 1) {
+  if (from_column < 0 || from_column >= getColumns() || from_row < 0 || from_row >= getRows()) {
+    std::cout << "[ERROR] Invalid origin!\n";
     return false;
   }
 
   // Player can only move chips from fields they own
   if (getFields()[from_row][from_column]->getPlayer() == nullptr ||
       getFields()[from_row][from_column]->getPlayer()->getId() != player.getId()) {
+    std::cout << "[ERROR] Invalid origin!\n";
+    return false;
+  }
+
+  if (to_column < 0 || to_column >= getColumns() || to_row < 0 || to_row >= getRows()) {
+    std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
 
   Field *from_field = getFields()[from_row][from_column];
   Field *to_field = getFields()[to_row][to_column];
 
-  if (to_field->getIsWater() || amount < 0 || amount > from_field->getChips()) {
+  if (amount < 0 || amount > from_field->getChips()) {
+    std::cout << "[ERROR] Invalid amount! Must be a number <= chips on origin field!\n";
+    return false;
+  }
+
+  // Player can only move chips to fields next to them
+  if (abs(from_column - to_column) > 1 || abs(from_row - to_row) > 1) {
+    std::cout << "[ERROR] Invalid destination!\n";
+    return false;
+  }
+
+  if (to_field->getIsWater()) {
+    std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
 
