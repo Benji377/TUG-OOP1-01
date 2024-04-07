@@ -137,9 +137,8 @@ void Game::execute(Command command) {
     std::cout << "[ERROR] Entered command not found!\n";
   }
 
-  if (getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0) {
+  if (getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0 && getPhase() == Phase::PLACEMENT) {
     setPhase(Phase::MOVEMENT);
-    calculateChips();
     printMovePhase();
     if (getCurrentRound() % 2 == 0) {
       setActivePlayer(getPlayerA());
@@ -209,6 +208,7 @@ void Game::passCommand() {
       if (getCurrentRound()+1 <= getMaxRounds()) {
         setCurrentRound(getCurrentRound() + 1);
         announceRound();
+        calculateChips();
         setPhase(Phase::PLACEMENT);
         printPlacePhase();
       } else {
@@ -248,7 +248,7 @@ void Game::placeCommand(Command command) {
         std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       }
     }
-  } else {
+  } else if (command.getType() == CommandType::MOVE) {
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
   }
 }
@@ -276,7 +276,7 @@ void Game::moveCommand(Command command) {
         std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       }
     }
-  } else {
+  } else if (command.getType() == CommandType::PLACE){
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
   }
 }
@@ -299,8 +299,13 @@ void Game::calculateChips() {
   // the number of fields currently claimed by the player by three and rounding up
   int player_a_chips = getMap()->getFieldsPerPlayer(*getPlayerA());
   int player_b_chips = getMap()->getFieldsPerPlayer(*getPlayerB());
-  getPlayerA()->setChips((player_a_chips / 3) + (player_a_chips % 3 != 0));
-  getPlayerB()->setChips((player_b_chips / 3) + (player_b_chips % 3 != 0));
+  //std::cout << "Player " << getPlayerA()->getId() << " has " << getPlayerA()->getChips() << " chip(s)!\n";
+  //std::cout << "Player " << getPlayerB()->getId() << " has " << getPlayerB()->getChips() << " chip(s)!\n";
+  //std::cout << "Player " << getPlayerA()->getId() << " gained " << ((player_a_chips / 3) + (player_a_chips % 3 != 0)) << " chip(s)!\n";
+  //std::cout << "Player " << getPlayerB()->getId() << " gained " << ((player_b_chips / 3) + (player_b_chips % 3 != 0)) << " chip(s)!\n";
+
+  getPlayerA()->setChips(((player_a_chips / 3) + (player_a_chips % 3 != 0)) + getPlayerA()->getChips());
+  getPlayerB()->setChips(((player_b_chips / 3) + (player_b_chips % 3 != 0)) + getPlayerB()->getChips());
 }
 
 void Game::calculatePoints() {
