@@ -113,11 +113,7 @@ void Game::printPlacePhase() {
   std::cout << "------------------\n";
   std::cout << "Placement Phase\n";
   std::cout << "------------------\n";
-  if (getCurrentRound() % 2 == 0) {
-    setActivePlayer(getPlayerB());
-  } else {
-    setActivePlayer(getPlayerA());
-  }
+  switchPhasePlayer(true);
   getMap()->printMap();
 }
 
@@ -125,11 +121,7 @@ void Game::printMovePhase() {
   std::cout << "------------------\n";
   std::cout << "Movement Phase\n";
   std::cout << "------------------\n";
-  if (getCurrentRound() % 2 == 0) {
-    setActivePlayer(getPlayerA());
-  } else {
-    setActivePlayer(getPlayerB());
-  }
+  switchPhasePlayer(false);
   getMap()->printMap();
 }
 
@@ -142,6 +134,7 @@ void Game::endPhase() {
 
 void Game::passCommand() {
   getActivePlayer()->setHasPassed(true);
+  // After a player uses the pass command, if possible the next player will be set as the active player
   changePlayer();
 }
 
@@ -153,6 +146,7 @@ bool Game::isRunning() {
 }
 
 void Game::execute(Command command) {
+  // Depending on the command type, the game will execute the command
   if (command.isQuit()) {
     setPhase(Phase::END);
     return;
@@ -170,6 +164,7 @@ void Game::execute(Command command) {
   } else {
     std::cout << "[ERROR] Entered command not found!\n";
   }
+  // Then we check the phase to see if the game should proceed to the next phase
   checkPhase();
 }
 
@@ -181,29 +176,48 @@ void Game::checkPhase() {
       || (getPlayerB()->getHasPassed() && getPlayerA()->getChips() == 0))) {
     setPhase(Phase::MOVEMENT);
     printMovePhase();
-    getPlayerA()->setHasPassed(false);
-    getPlayerB()->setHasPassed(false);
   }
-  if (getPhase() == Phase::MOVEMENT && getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()){
+  // In the movement phase, to get to th next phase, both players must have passed
+  if (getPhase() == Phase::MOVEMENT && getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) {
+    // After the movement phase, the game proceeds to the next round
     nextRound();
     setPhase(Phase::PLACEMENT);
   }
+  // If there are no more fields left or if we are in the last round, the game ends
   if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) == 0 ||
       (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
     setPhase(Phase::END);
   } else {
+    // In all other instances, we print the player prompt and proceed with the game
     printPlayerPrompt();
   }
 }
 
+void Game::switchPhasePlayer(bool isPlacementPhase) {
+  if (isPlacementPhase) {
+    if (getCurrentRound() % 2 == 0) {
+      setActivePlayer(getPlayerB());
+    } else {
+      setActivePlayer(getPlayerA());
+    }
+  } else {
+    if (getCurrentRound() % 2 == 0) {
+      setActivePlayer(getPlayerA());
+    } else {
+      setActivePlayer(getPlayerB());
+    }
+  }
+  getPlayerA()->setHasPassed(false);
+  getPlayerB()->setHasPassed(false);
+}
+
 void Game::nextRound() {
+  // If the current round is less than the maximum rounds, we proceed to the next round
   if (getCurrentRound()+1 <= getMaxRounds()) {
     setCurrentRound(getCurrentRound() + 1);
     announceRound();
     calculateChips();
     printPlacePhase();
-    getPlayerA()->setHasPassed(false);
-    getPlayerB()->setHasPassed(false);
   } else {
     setPhase(Phase::END);
     return;
@@ -212,38 +226,41 @@ void Game::nextRound() {
 
 void Game::placeCommand(Command command) {
   if (command.getType() == CommandType::PLACE) {
-    if (command.getParameters().size() == 3) {
-      int amount, field_column, field_row;
-      if (Utils::decimalStringToInt(command.getParameters()[0], amount) &&
-          Utils::decimalStringToInt(command.getParameters()[1], field_column) &&
-          Utils::decimalStringToInt(command.getParameters()[2], field_row)) {
-        // Fixing the 1-based index to 0-based index
-        field_column--;
-        field_row--;
-        if (amount > 0) {
-          if (amount <= getActivePlayer()->getChips()) {
-            if (getMap()->placeChip(*getActivePlayer(), amount, field_column, field_row)) {
-              getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
-              getMap()->printMap();
-              changePlayer();
-            } else {
-              std::cout << "[ERROR] Invalid field!\n";
-            }
+    // The command should have 3 parameters: amount, column, row
+    int amount, field_column, field_row;
+    bool amount_valid, field_column_valid, field_row_valid;
+    // Try to convert the parameters to integers
+    amount_valid = Utils::decimalStringToInt(command.getParameters()[0], amount);
+    field_column_valid = Utils::decimalStringToInt(command.getParameters()[1], field_column);
+    field_row_valid = Utils::decimalStringToInt(command.getParameters()[2], field_row);
+    // Check if the parameters are valid
+    if (amount_valid && field_column_valid && field_row_valid) {
+      // Fixing the 1-based index to 0-based index
+      field_column--;
+      field_row--;
+      if (amount > 0) {
+        if (amount <= getActivePlayer()->getChips()) {
+          // Finally place the chip on the field
+          if (getMap()->placeChip(*getActivePlayer(), amount, field_column, field_row)) {
+            // Print the map and change the player
+            getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
+            getMap()->printMap();
+            changePlayer();
           } else {
-            std::cout << "[ERROR] Invalid amount! Must be a number <= chips in player inventory!\n";
+            std::cout << "[ERROR] Invalid field!\n";
           }
         } else {
-          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+          std::cout << "[ERROR] Invalid amount! Must be a number <= chips in player inventory!\n";
         }
       } else {
-        if (Utils::decimalStringToInt(command.getParameters()[0], amount)) {
-          std::cout << "[ERROR] Invalid field!\n";
-        } else {
-          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
-        }
+        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       }
     } else {
-      std::cout << "[ERROR] Invalid command! Must have 3 parameters!\n";
+      if (amount_valid) {
+        std::cout << "[ERROR] Invalid field!\n";
+      } else {
+        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+      }
     }
   } else if (command.getType() == CommandType::MOVE) {
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
@@ -252,36 +269,37 @@ void Game::placeCommand(Command command) {
 
 void Game::moveCommand(Command command) {
   if (command.getType() == CommandType::MOVE) {
-    if (command.getParameters().size() == 5) {
-      int amount, from_field_column, from_field_row, to_field_column, to_field_row;
-      bool amount_valid, from_field_column_valid, from_field_row_valid, to_field_column_valid, to_field_row_valid;
-      amount_valid = Utils::decimalStringToInt(command.getParameters()[0], amount);
-      from_field_column_valid = Utils::decimalStringToInt(command.getParameters()[1], from_field_column);
-      from_field_row_valid = Utils::decimalStringToInt(command.getParameters()[2], from_field_row);
-      to_field_column_valid = Utils::decimalStringToInt(command.getParameters()[3], to_field_column);
-      to_field_row_valid = Utils::decimalStringToInt(command.getParameters()[4], to_field_row);
-      if (amount_valid && from_field_column_valid && from_field_row_valid && to_field_column_valid && to_field_row_valid) {
-        // Fixing the 1-based index to 0-based index
-        from_field_column--;
-        from_field_row--;
-        to_field_column--;
-        to_field_row--;
-        if (getMap()->moveChip(*getActivePlayer(), amount, from_field_column, from_field_row,
-                               to_field_column, to_field_row)) {
-          getMap()->printMap();
-          changePlayer();
-        }
-      } else {
-        if (!amount_valid || amount <= 0) {
-          std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
-        } else if (!from_field_column_valid || !from_field_row_valid) {
-          std::cout << "[ERROR] Invalid origin!\n";
-        } else {
-          std::cout << "[ERROR] Invalid destination!\n";
-        }
+    // The command should have 5 parameters: amount, from_column, from_row, to_column, to_row
+    int amount, from_field_column, from_field_row, to_field_column, to_field_row;
+    bool amount_valid, from_field_column_valid, from_field_row_valid, to_field_column_valid, to_field_row_valid;
+    // Try to convert the parameters to integers
+    amount_valid = Utils::decimalStringToInt(command.getParameters()[0], amount);
+    from_field_column_valid = Utils::decimalStringToInt(command.getParameters()[1], from_field_column);
+    from_field_row_valid = Utils::decimalStringToInt(command.getParameters()[2], from_field_row);
+    to_field_column_valid = Utils::decimalStringToInt(command.getParameters()[3], to_field_column);
+    to_field_row_valid = Utils::decimalStringToInt(command.getParameters()[4], to_field_row);
+    // Check if the parameters are valid
+    if (amount_valid && from_field_column_valid && from_field_row_valid && to_field_column_valid && to_field_row_valid) {
+      // Fixing the 1-based index to 0-based index
+      from_field_column--;
+      from_field_row--;
+      to_field_column--;
+      to_field_row--;
+      // Finally move the chip from the origin to the destination
+      if (getMap()->moveChip(*getActivePlayer(), amount, from_field_column, from_field_row,
+                             to_field_column, to_field_row)) {
+        // Print the map and change the player
+        getMap()->printMap();
+        changePlayer();
       }
     } else {
-      std::cout << "[ERROR] Invalid command! Must have 5 parameters!\n";
+      if (!amount_valid || amount <= 0) {
+        std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
+      } else if (!from_field_column_valid || !from_field_row_valid) {
+        std::cout << "[ERROR] Invalid origin!\n";
+      } else {
+        std::cout << "[ERROR] Invalid destination!\n";
+      }
     }
   } else if (command.getType() == CommandType::PLACE){
     std::cout << "[ERROR] Entered command is not valid in this phase!\n";
@@ -293,7 +311,7 @@ void Game::calculateChips() {
   // the number of fields currently claimed by the player by three and rounding up
   int player_a_chips = getMap()->getFieldsPerPlayer(*getPlayerA());
   int player_b_chips = getMap()->getFieldsPerPlayer(*getPlayerB());
-
+  // The chips are then added to the player's inventory
   getPlayerA()->setChips(((player_a_chips / 3) + (player_a_chips % 3 != 0)) + getPlayerA()->getChips());
   getPlayerB()->setChips(((player_b_chips / 3) + (player_b_chips % 3 != 0)) + getPlayerB()->getChips());
 }
@@ -324,12 +342,14 @@ void Game::changePlayer() {
       }
     }
   } else {
+    // If the active player has passed, the next player will be set as the active player
     if (getActivePlayer()->getId() == getPlayerA()->getId()) {
-      if (!getPlayerB()->getHasPassed()) {
+      // Furthermore, the player must have fields left to move chips from
+      if (!getPlayerB()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerB()) != 0){
         setActivePlayer(getPlayerB());
       }
     } else {
-      if (!getPlayerA()->getHasPassed()) {
+      if (!getPlayerA()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerA()) != 0) {
         setActivePlayer(getPlayerA());
       }
     }

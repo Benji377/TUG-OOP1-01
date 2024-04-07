@@ -44,17 +44,6 @@ void Map::setIsOutputActive(bool output_active) {
   output_active_ = output_active;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-///
-/// This function creates a 2D vector of fields based on the config file. It reads the config file line by line and
-/// creates a field object for each character in the line. The function is private and used by the constructor.
-///
-/// @param config_path The path to the config file
-/// @param player_a The first player
-/// @param player_b The second player
-///
-/// @return A 2D vector of fields parsed from the config file
-//
 std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player *player_a, Player *player_b) {
   std::string line;
   std::vector<std::vector<Field *>> fields(getRows(), std::vector<Field *>(getColumns()));
@@ -68,18 +57,7 @@ std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player 
   return fields;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-///
-/// This function creates a field object based on the character of the field in the config file. If the field is claimed
-/// by a player, the player object is set. If the field is water, the is_water flag is set. If the field is empty, the
-/// field is created without a player and without chips. The function is private and used by createFieldMap.
-///
-/// @param field_char The character of the field in the config file
-/// @param player_a The first player
-/// @param player_b The second player
-///
-/// @return a field object depending on the field_char
-//
+
 Field *Map::createField(char field_char, Player *player_a, Player *player_b) {
   switch (field_char) {
     case 'a':
@@ -93,12 +71,6 @@ Field *Map::createField(char field_char, Player *player_a, Player *player_b) {
   }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-///
-/// This function prints the map to the console. It iterates over all fields and prints the player id and the amount of
-/// chips on the field. If the field is water, it prints a wave symbol. If the field is empty, it prints an empty space.
-///
-//
 void Map::printMap() {
   if (!getIsOutputActive()) {
     return;
@@ -129,15 +101,6 @@ void Map::printMap() {
   std::cout << "\n";
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-///
-/// This function counts the amount of fields a player has claimed by iterating over all fields and checking if
-/// the player is the owner of the field.
-///
-/// @param player The player to count the fields for
-///
-/// @return the amount of fields the player has claimed
-//
 int Map::getFieldsPerPlayer(Player player) {
   int fields_per_player = 0;
   for (int row_number = 0; row_number < getRows(); row_number++) {
@@ -157,11 +120,8 @@ bool Map::placeChip(Player player, int amount, int column, int row) {
   }
   Field *field = getFields()[row][column];
 
-  if (field->getPlayer() == nullptr) {
-    return false;
-  }
-
-  if (field->getIsWater() || amount < 0 || field->getPlayer()->getId() != player.getId()) {
+  if (field->getPlayer() == nullptr || field->getIsWater()
+      || amount < 0 || field->getPlayer()->getId() != player.getId()) {
     return false;
   }
   field->setChips(field->getChips() + amount);
@@ -173,48 +133,39 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
     std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
     return false;
   }
-
   if (from_column < 0 || from_column >= getColumns() || from_row < 0 || from_row >= getRows()) {
     std::cout << "[ERROR] Invalid origin!\n";
     return false;
   }
-
   // Player can only move chips from fields they own
   if (getFields()[from_row][from_column]->getPlayer() == nullptr ||
       getFields()[from_row][from_column]->getPlayer()->getId() != player.getId()) {
     std::cout << "[ERROR] Invalid origin!\n";
     return false;
   }
-
   if (to_column < 0 || to_column >= getColumns() || to_row < 0 || to_row >= getRows()) {
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
-
   Field *from_field = getFields()[from_row][from_column];
   Field *to_field = getFields()[to_row][to_column];
-
   if (from_field == to_field) {
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
-
   if (amount > from_field->getChips()) {
     std::cout << "[ERROR] Invalid amount! Must be a number <= chips on origin field!\n";
     return false;
   }
-
   // Player can only move chips to fields next to them
   if (abs(from_column - to_column) > 1 || abs(from_row - to_row) > 1) {
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
-
   if (to_field->getIsWater()) {
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
   }
-
   if (to_field->getPlayer() == nullptr) {
     to_field->setPlayer(from_field->getPlayer());
     to_field->setChips(amount);
@@ -229,11 +180,9 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
       to_field->setPlayer(from_field->getPlayer());
     } else {
       to_field->setChips(new_destination_field_amount);
-
     }
   }
   from_field->setChips(from_field->getChips() - amount);
-
   if (from_field->getChips() == 0) {
     from_field->setPlayer(nullptr);
   }
