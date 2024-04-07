@@ -32,6 +32,8 @@ private:
   void calculateChips();
   void calculatePoints();
   void changePlayer();
+  void checkPhase();
+  void nextRound();
 
 public:
   // Functions

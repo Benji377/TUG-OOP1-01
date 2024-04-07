@@ -20,6 +20,9 @@ int Player::getChips() const {
 }
 
 void Player::setChips(int chips) {
+  if (chips < 0) {
+    chips = 0;
+  }
   chips_ = chips;
 }
 

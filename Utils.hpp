@@ -32,12 +32,50 @@ class Utils
   //
   static bool decimalStringToInt(const std::string& str, int& number);
 
-  // Extensions
+  ///------------------------------------------------------------------------------------------------------------------
+  ///
+  /// Utils class extension: This function reads a specific line from a file. The line number is given as a parameter.
+  ///
+  /// @param config_path The path to the file
+  /// @param line_number The line number to be read
+  ///
+  /// @return The line read from the file
+  //
   static std::string readConfigLine(char* config_path, int line_number);
+
+  ///------------------------------------------------------------------------------------------------------------------
+  ///
+  /// Utils class extension: This function checks if a given configuration file is valid. A configuration file is valid
+  /// if it contains the correct magic number at the start of the file.
+  ///
+  /// @param config_path The path to the file
+  ///
+  /// @return true if the configuration file is valid, false otherwise
+  //
   static bool isValidConfig(char* config_path);
+
+  ///------------------------------------------------------------------------------------------------------------------
+  ///
+  /// Utils class extension: This function splits a string into a vector of strings using a delimiter.
+  ///
+  /// @param string The string to be split
+  /// @param delimiter The delimiter to split the string
+  ///
+  /// @return A vector of strings
+  //
   static std::vector<std::string> splitString(const std::string& string, const std::string& delimiter);
 
 private:
+  ///------------------------------------------------------------------------------------------------------------------
+  ///
+  /// Utils class extension: This function moves the file pointer to a specific line in a file.
+  /// This is a helper function for the readConfigLine function.
+  ///
+  /// @param file The file to be read
+  /// @param num The line number to be read
+  ///
+  /// @return The file with the file pointer at the specified line
+  //
   static std::fstream& goToLine(std::fstream& file, int num);
 
 };

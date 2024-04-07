@@ -2,11 +2,6 @@
 #include "Game.hpp"
 #include "Utils.hpp"
 
-// TODO
-// - The chips must be carried from round to round and not resetted, as it is now
-// - Error messages are missing
-// - Clean up the code
-
 Game::Game(int maximum_rounds, char *config_path) {
   current_round_ = 1;
   max_rounds_ = maximum_rounds;
@@ -92,11 +87,8 @@ void Game::start() {
   announceRound();
   calculateChips();
   printPlacePhase();
-  if (getCurrentRound() % 2 == 0) {
-    setActivePlayer(getPlayerB());
-  } else {
-    setActivePlayer(getPlayerA());
-  }
+  // First player is always Player A, since the game starts with Round 1
+  setActivePlayer(getPlayerA()); // TODO: Might remove this line
   printPlayerPrompt();
 }
 
@@ -112,11 +104,54 @@ void Game::announceRound() {
 void Game::printPlayerPrompt() {
   if (getPhase() == Phase::PLACEMENT) {
     std::cout << "Player " << getActivePlayer()->getId()
-              << ", you have " << getActivePlayer()->getChips() << " chip(s) left, "
-                                                                   "where and how do you want to place your chips?\n";
+              << ", you have " << getActivePlayer()->getChips()
+              << " chip(s) left, where and how do you want to place your chips?\n";
   } else {
     std::cout << "Player " << getActivePlayer()->getId() << ", what do you want to do?\n";
   }
+}
+
+void Game::printPlacePhase() {
+  std::cout << "------------------\n";
+  std::cout << "Placement Phase\n";
+  std::cout << "------------------\n";
+  if (getCurrentRound() % 2 == 0) {
+    setActivePlayer(getPlayerB());
+  } else {
+    setActivePlayer(getPlayerA());
+  }
+  getMap()->printMap();
+}
+
+void Game::printMovePhase() {
+  std::cout << "------------------\n";
+  std::cout << "Movement Phase\n";
+  std::cout << "------------------\n";
+  if (getCurrentRound() % 2 == 0) {
+    setActivePlayer(getPlayerA());
+  } else {
+    setActivePlayer(getPlayerB());
+  }
+  getMap()->printMap();
+}
+
+void Game::endPhase() {
+  std::cout << "------------------\n";
+  std::cout << "GAME END!\n";
+  std::cout << "\n";
+  calculatePoints();
+}
+
+void Game::passCommand() {
+  getActivePlayer()->setHasPassed(true);
+  changePlayer();
+}
+
+bool Game::isRunning() {
+  if (getPhase() == Phase::END) {
+    endPhase();
+  }
+  return getPhase() != Phase::END;
 }
 
 void Game::execute(Command command) {
@@ -136,90 +171,43 @@ void Game::execute(Command command) {
   } else {
     std::cout << "[ERROR] Entered command not found!\n";
   }
+  checkPhase();
+}
 
-  if (getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0 && getPhase() == Phase::PLACEMENT) {
+void Game::checkPhase() {
+  // If both players have no chips left, the game proceeds to the movement phase
+  if (getPhase() == Phase::PLACEMENT && ((getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0)
+      || (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed())
+      || (getPlayerA()->getHasPassed() && getPlayerB()->getChips() == 0)
+      || (getPlayerB()->getHasPassed() && getPlayerA()->getChips() == 0))) {
     setPhase(Phase::MOVEMENT);
     printMovePhase();
-    if (getCurrentRound() % 2 == 0) {
-      setActivePlayer(getPlayerA());
-    } else {
-      setActivePlayer(getPlayerB());
-    }
+    getPlayerA()->setHasPassed(false);
+    getPlayerB()->setHasPassed(false);
   }
-  if ((getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
+  if (getPhase() == Phase::MOVEMENT && getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()){
+    nextRound();
+    setPhase(Phase::PLACEMENT);
+  }
+  if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) == 0 ||
+      (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
     setPhase(Phase::END);
   } else {
     printPlayerPrompt();
   }
 }
 
-void Game::printPlacePhase() {
-  std::cout << "------------------\n";
-  std::cout << "Placement Phase\n";
-  std::cout << "------------------\n";
-  getMap()->printMap();
-}
-
-void Game::printMovePhase() {
-  std::cout << "------------------\n";
-  std::cout << "Movement Phase\n";
-  std::cout << "------------------\n";
-  getMap()->printMap();
-}
-
-void Game::endPhase() {
-  std::cout << "------------------\n";
-  std::cout << "GAME END!\n";
-  std::cout << "\n";
-  calculatePoints();
-}
-
-void Game::passCommand() {
-  getActivePlayer()->setHasPassed(true);
-  if (getActivePlayer()->getId() == getPlayerA()->getId()) {
-    setActivePlayer(getPlayerB());
-  } else {
-    setActivePlayer(getPlayerA());
-  }
-
-  if ((getPlayerA()->getChips() == 0 && getPlayerB()->getHasPassed()) ||
-  (getPlayerB()->getChips() == 0 && getPlayerA()->getHasPassed())) {
-    if (getPhase() == Phase::PLACEMENT) {
-      setPhase(Phase::MOVEMENT);
-      if (getCurrentRound() % 2 == 0) {
-        setActivePlayer(getPlayerA());
-      } else {
-        setActivePlayer(getPlayerB());
-      }
-      printMovePhase();
-    }
-  }
-
-  if (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) {
-    if (getPhase() == Phase::PLACEMENT) {
-      setPhase(Phase::MOVEMENT);
-      if (getCurrentRound() % 2 == 0) {
-        setActivePlayer(getPlayerA());
-      } else {
-        setActivePlayer(getPlayerB());
-      }
-      printMovePhase();
-    } else {
-      if (getCurrentRound()+1 <= getMaxRounds()) {
-        setCurrentRound(getCurrentRound() + 1);
-        announceRound();
-        calculateChips();
-        setPhase(Phase::PLACEMENT);
-        printPlacePhase();
-      } else {
-        setPhase(Phase::END);
-        endPhase();
-        return;
-      }
-    }
-    // Reset the hasPassed flag
+void Game::nextRound() {
+  if (getCurrentRound()+1 <= getMaxRounds()) {
+    setCurrentRound(getCurrentRound() + 1);
+    announceRound();
+    calculateChips();
+    printPlacePhase();
     getPlayerA()->setHasPassed(false);
     getPlayerB()->setHasPassed(false);
+  } else {
+    setPhase(Phase::END);
+    return;
   }
 }
 
@@ -281,10 +269,6 @@ void Game::moveCommand(Command command) {
                                to_field_column, to_field_row)) {
           getMap()->printMap();
           changePlayer();
-          if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) == 0) {
-            setPhase(Phase::END);
-            endPhase();
-          }
         }
       } else {
         if (!amount_valid || amount <= 0) {
@@ -301,28 +285,11 @@ void Game::moveCommand(Command command) {
   }
 }
 
-bool Game::isRunning() {
-  if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 && getMap()->getFieldsPerPlayer(*getPlayerB()) == 0) {
-    setPhase(Phase::END);
-    endPhase();
-  }
-
-  if (getCurrentRound() > getMaxRounds()) {
-    setPhase(Phase::END);
-    endPhase();
-  }
-  return getPhase() != Phase::END;
-}
-
 void Game::calculateChips() {
   // The number of chips gained is calculated by dividing
   // the number of fields currently claimed by the player by three and rounding up
   int player_a_chips = getMap()->getFieldsPerPlayer(*getPlayerA());
   int player_b_chips = getMap()->getFieldsPerPlayer(*getPlayerB());
-  //std::cout << "Player " << getPlayerA()->getId() << " has " << getPlayerA()->getChips() << " chip(s)!\n";
-  //std::cout << "Player " << getPlayerB()->getId() << " has " << getPlayerB()->getChips() << " chip(s)!\n";
-  //std::cout << "Player " << getPlayerA()->getId() << " gained " << ((player_a_chips / 3) + (player_a_chips % 3 != 0)) << " chip(s)!\n";
-  //std::cout << "Player " << getPlayerB()->getId() << " gained " << ((player_b_chips / 3) + (player_b_chips % 3 != 0)) << " chip(s)!\n";
 
   getPlayerA()->setChips(((player_a_chips / 3) + (player_a_chips % 3 != 0)) + getPlayerA()->getChips());
   getPlayerB()->setChips(((player_b_chips / 3) + (player_b_chips % 3 != 0)) + getPlayerB()->getChips());

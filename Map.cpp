@@ -62,7 +62,6 @@ std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player 
     line = Utils::readConfigLine(config_path, line_number + 3);
     for (int field_number = 0; field_number < getColumns(); field_number++) {
       char field_char = line.at(field_number);
-      // TODO: Free space after field has been deleted
       fields[line_number][field_number] = createField(field_char, player_a, player_b);
     }
   }
@@ -200,7 +199,7 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
     return false;
   }
 
-  if (amount < 0 || amount > from_field->getChips()) {
+  if (amount > from_field->getChips()) {
     std::cout << "[ERROR] Invalid amount! Must be a number <= chips on origin field!\n";
     return false;
   }
