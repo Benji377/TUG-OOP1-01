@@ -293,7 +293,7 @@ void Game::moveCommand(Command command) {
         changePlayer();
       }
     } else {
-      if (!amount_valid || amount <= 0) {
+      if (!amount_valid || amount < 0) {
         std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
       } else if (!from_field_column_valid || !from_field_row_valid) {
         std::cout << "[ERROR] Invalid origin!\n";
