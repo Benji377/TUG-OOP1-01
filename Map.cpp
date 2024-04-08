@@ -129,7 +129,7 @@ bool Map::placeChip(Player player, int amount, int column, int row) {
 }
 
 bool Map::moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row) {
-  if (amount <= 0) {
+  if (amount < 0) {
     std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
     return false;
   }
