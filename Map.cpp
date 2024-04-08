@@ -114,21 +114,20 @@ int Map::getFieldsPerPlayer(Player player) {
   return fields_per_player;
 }
 
-bool Map::placeChip(Player player, int amount, int column, int row) {
+bool Map::placeChip(Player *player, int amount, int column, int row) {
   if (column < 0 || column >= getColumns() || row < 0 || row >= getRows()) {
     return false;
   }
   Field *field = getFields()[row][column];
 
-  if (field->getPlayer() == nullptr || field->getIsWater()
-      || amount < 0 || field->getPlayer()->getId() != player.getId()) {
+  if (field->getPlayer() == nullptr || field->getIsWater() || field->getPlayer()->getId() != player->getId()) {
     return false;
   }
   field->setChips(field->getChips() + amount);
   return true;
 }
 
-bool Map::moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row) {
+bool Map::moveChip(Player *player, int amount, int from_column, int from_row, int to_column, int to_row) {
   if (amount < 1) {
     std::cout << "[ERROR] Invalid amount! Must be a number > 0!\n";
     return false;
@@ -139,7 +138,7 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
   }
   // Player can only move chips from fields they own
   if (getFields()[from_row][from_column]->getPlayer() == nullptr ||
-      getFields()[from_row][from_column]->getPlayer()->getId() != player.getId()) {
+      getFields()[from_row][from_column]->getPlayer()->getId() != player->getId()) {
     std::cout << "[ERROR] Invalid origin!\n";
     return false;
   }
@@ -169,7 +168,7 @@ bool Map::moveChip(Player player, int amount, int from_column, int from_row, int
   if (to_field->getPlayer() == nullptr) {
     to_field->setPlayer(from_field->getPlayer());
     to_field->setChips(amount);
-  } else if (to_field->getPlayer()->getId() == player.getId()) {
+  } else if (to_field->getPlayer()->getId() == player->getId()) {
     to_field->setChips(to_field->getChips() + amount);
   } else {
     int new_destination_field_amount = to_field->getChips() + 1 - amount;

@@ -241,7 +241,7 @@ void Game::placeCommand(Command command) {
       if (amount > 0) {
         if (amount <= getActivePlayer()->getChips()) {
           // Finally place the chip on the field
-          if (getMap()->placeChip(*getActivePlayer(), amount, field_column, field_row)) {
+          if (getMap()->placeChip(getActivePlayer(), amount, field_column, field_row)) {
             // Print the map and change the player
             getActivePlayer()->setChips(getActivePlayer()->getChips() - amount);
             getMap()->printMap();
@@ -286,7 +286,7 @@ void Game::moveCommand(Command command) {
       to_field_column--;
       to_field_row--;
       // Finally move the chip from the origin to the destination
-      if (getMap()->moveChip(*getActivePlayer(), amount, from_field_column, from_field_row,
+      if (getMap()->moveChip(getActivePlayer(), amount, from_field_column, from_field_row,
                              to_field_column, to_field_row)) {
         // Print the map and change the player
         getMap()->printMap();

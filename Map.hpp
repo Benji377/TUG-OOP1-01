@@ -145,7 +145,7 @@ public:
   ///
   /// @return Whether the chip was placed successfully or not
   //
-  bool placeChip(Player player, int amount, int column, int row);
+  bool placeChip(Player *player, int amount, int column, int row);
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -163,7 +163,7 @@ public:
   ///
   /// @return Whether the chip was moved successfully or not
   //
-  bool moveChip(Player player, int amount, int from_column, int from_row, int to_column, int to_row);
+  bool moveChip(Player *player, int amount, int from_column, int from_row, int to_column, int to_row);
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
