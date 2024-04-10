@@ -100,6 +100,10 @@ void Game::announceRound() {
 
 
 void Game::printPlayerPrompt() {
+  if (getActivePlayer()->getChips() <= 0 && getPhase() == Phase::PLACEMENT) {
+    std::cout << "Player " << getActivePlayer()->getId() << ", you have no chips left, you must pass!\n";
+  }
+
   if (getPhase() == Phase::PLACEMENT) {
     std::cout << "Player " << getActivePlayer()->getId()
               << ", you have " << getActivePlayer()->getChips()
