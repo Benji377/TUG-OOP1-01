@@ -32,11 +32,14 @@ void CommandLine::stringToVector(const std::string &string, std::vector<std::str
   size_t position = 0;
   size_t position2;
   std::string split_word;
+  // Iterate through the entire vector of strings and split them by the delimiter
   while ((position2 = string.find(delimiter, position)) != std::string::npos)
   {
     split_word = string.substr(position, position2 - position);
     position = position2 + 1;
+    // Remove any trailing and leading whitespaces
     removeWhitespacesAtEnds(split_word);
+    // Finally add the word to the vector
     if (!split_word.empty())
     {
       vector.push_back(split_word);

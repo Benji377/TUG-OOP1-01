@@ -18,7 +18,7 @@ void Field::setChips(int amount) {
   chips_ = amount;
 }
 
-int Field::getChips() {
+int Field::getChips() const {
   return chips_;
 }
 
@@ -26,6 +26,6 @@ void Field::setIsWater(bool is_water) {
   is_water_ = is_water;
 }
 
-bool Field::getIsWater() {
+bool Field::getIsWater() const {
   return is_water_;
 }

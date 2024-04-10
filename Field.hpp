@@ -50,7 +50,7 @@ public:
   ///
   /// @return The amount of chips on the field
   //
-  int getChips();
+  [[nodiscard]] int getChips() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -66,7 +66,7 @@ public:
   ///
   /// @return The value of is_water_
   //
-  bool getIsWater();
+  [[nodiscard]] bool getIsWater() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///

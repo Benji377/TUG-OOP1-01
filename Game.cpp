@@ -187,10 +187,6 @@ void Game::checkPhase() {
   // If there are no more fields left or if we are in the last round, the game ends
   if (getMap()->getFieldsPerPlayer(*getPlayerA()) <= 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) <= 0 ||
       (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
-    if (getPhase() == Phase::PLACEMENT) {
-      std::cout << "This should not happen!\n";
-    }
-
     setPhase(Phase::END);
   } else {
     // In all other instances, we print the player prompt and proceed with the game
