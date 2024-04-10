@@ -151,7 +151,7 @@ void Game::execute(Command command) {
     setPhase(Phase::END);
     return;
   } else if (command.getType() == CommandType::INFO) {
-    getActivePlayer()->printPlayerInfo(getMap()->getFieldsPerPlayer(*getActivePlayer()));
+    getActivePlayer()->printPlayerInfo(getMap()->getFieldsPerPlayer(getActivePlayer()));
   } else if (command.getType() == CommandType::MAP) {
     getMap()->setIsOutputActive(!getMap()->getIsOutputActive());
     getMap()->printMap(); // The function will print the map if the output is active and return otherwise
@@ -185,7 +185,7 @@ void Game::checkPhase() {
     setPhase(Phase::PLACEMENT);
   }
   // If there are no more fields left or if we are in the last round, the game ends
-  if (getMap()->getFieldsPerPlayer(*getPlayerA()) <= 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) <= 0 ||
+  if (getMap()->getFieldsPerPlayer(getPlayerA()) <= 0 || getMap()->getFieldsPerPlayer(getPlayerB()) <= 0 ||
       (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
     setPhase(Phase::END);
   } else {
@@ -310,22 +310,22 @@ void Game::moveCommand(Command command) {
 void Game::calculateChips() {
   // The number of chips gained is calculated by dividing
   // the number of fields currently claimed by the player by three and rounding up
-  int player_a_chips = getMap()->getFieldsPerPlayer(*getPlayerA());
-  int player_b_chips = getMap()->getFieldsPerPlayer(*getPlayerB());
+  int player_a_chips = getMap()->getFieldsPerPlayer(getPlayerA());
+  int player_b_chips = getMap()->getFieldsPerPlayer(getPlayerB());
   // The chips are then added to the player's inventory
   getPlayerA()->setChips(((player_a_chips / 3) + (player_a_chips % 3 != 0)) + getPlayerA()->getChips());
   getPlayerB()->setChips(((player_b_chips / 3) + (player_b_chips % 3 != 0)) + getPlayerB()->getChips());
 }
 
 void Game::calculatePoints() {
-  std::cout << "Player " << getPlayerA()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerA())
-            << " field(s)!\n";
-  std::cout << "Player " << getPlayerB()->getId() << " claimed " << getMap()->getFieldsPerPlayer(*getPlayerB())
-            << " field(s)!\n";
-  if (getMap()->getFieldsPerPlayer(*getPlayerA()) > getMap()->getFieldsPerPlayer(*getPlayerB())) {
+  int player_a_points = getMap()->getFieldsPerPlayer(getPlayerA());
+  int player_b_points = getMap()->getFieldsPerPlayer(getPlayerB());
+  std::cout << "Player " << getPlayerA()->getId() << " claimed " << player_a_points << " field(s)!\n";
+  std::cout << "Player " << getPlayerB()->getId() << " claimed " << player_b_points << " field(s)!\n";
+  if (player_a_points > player_b_points) {
     std::cout << "\n";
     std::cout << "Congratulations, Player " << getPlayerA()->getId() << "! You won!\n";
-  } else if (getMap()->getFieldsPerPlayer(*getPlayerA()) < getMap()->getFieldsPerPlayer(*getPlayerB())) {
+  } else if (player_a_points < player_b_points) {
     std::cout << "\n";
     std::cout << "Congratulations, Player " << getPlayerB()->getId() << "! You won!\n";
   }
@@ -346,11 +346,11 @@ void Game::changePlayer() {
     // If the active player has passed, the next player will be set as the active player
     if (getActivePlayer()->getId() == getPlayerA()->getId()) {
       // Furthermore, the player must have fields left to move chips from
-      if (!getPlayerB()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerB()) > 0){
+      if (!getPlayerB()->getHasPassed() && getMap()->getFieldsPerPlayer(getPlayerB()) > 0){
         setActivePlayer(getPlayerB());
       }
     } else {
-      if (!getPlayerA()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerA()) > 0) {
+      if (!getPlayerA()->getHasPassed() && getMap()->getFieldsPerPlayer(getPlayerA()) > 0) {
         setActivePlayer(getPlayerA());
       }
     }

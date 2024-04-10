@@ -101,12 +101,12 @@ void Map::printMap() {
   std::cout << "\n";
 }
 
-int Map::getFieldsPerPlayer(Player player) {
+int Map::getFieldsPerPlayer(Player *player) {
   int fields_per_player = 0;
   for (int row_number = 0; row_number < getRows(); row_number++) {
     for (int column_number = 0; column_number < getColumns(); column_number++) {
       Field *field = getFields()[row_number][column_number];
-      if (field->getPlayer() != nullptr && field->getPlayer()->getId() == player.getId()) {
+      if (field->getPlayer() != nullptr && field->getPlayer()->getId() == player->getId()) {
         fields_per_player++;
       }
     }

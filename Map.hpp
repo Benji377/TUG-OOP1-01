@@ -130,7 +130,7 @@ public:
   ///
   /// @return The amount of fields a player has claimed
   //
-  int getFieldsPerPlayer(Player player);
+  int getFieldsPerPlayer(Player *player);
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
