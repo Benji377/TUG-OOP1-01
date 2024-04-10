@@ -36,7 +36,7 @@ void Game::setPlayerB(Player *playerB) {
   player_b_ = playerB;
 }
 
-int Game::getCurrentRound() {
+int Game::getCurrentRound() const {
   return current_round_;
 }
 
@@ -44,7 +44,7 @@ void Game::setCurrentRound(int currentRound) {
   current_round_ = currentRound;
 }
 
-int Game::getMaxRounds() {
+int Game::getMaxRounds() const {
   return max_rounds_;
 }
 
@@ -90,7 +90,7 @@ void Game::start() {
   printPlayerPrompt();
 }
 
-void Game::announceRound() {
+void Game::announceRound() const {
   std::cout << "\n";
   std::cout << "------------------\n";
   std::cout << "Round " << getCurrentRound() << "/" << getMaxRounds() << " starts!\n";
@@ -100,10 +100,6 @@ void Game::announceRound() {
 
 
 void Game::printPlayerPrompt() {
-  if (getActivePlayer()->getChips() <= 0 && getPhase() == Phase::PLACEMENT) {
-    std::cout << "Player " << getActivePlayer()->getId() << ", you have no chips left, you must pass!\n";
-  }
-
   if (getPhase() == Phase::PLACEMENT) {
     std::cout << "Player " << getActivePlayer()->getId()
               << ", you have " << getActivePlayer()->getChips()
@@ -174,10 +170,11 @@ void Game::execute(Command command) {
 
 void Game::checkPhase() {
   // If both players have no chips left, the game proceeds to the movement phase
-  if (getPhase() == Phase::PLACEMENT && ((getPlayerA()->getChips() == 0 && getPlayerB()->getChips() == 0)
+  if (getPhase() == Phase::PLACEMENT && (
+          (getPlayerA()->getChips() <= 0 && getPlayerB()->getChips() <= 0)
       || (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed())
-      || (getPlayerA()->getHasPassed() && getPlayerB()->getChips() == 0)
-      || (getPlayerB()->getHasPassed() && getPlayerA()->getChips() == 0))) {
+      || (getPlayerA()->getHasPassed() && getPlayerB()->getChips() <= 0)
+      || (getPlayerB()->getHasPassed() && getPlayerA()->getChips() <= 0))) {
     setPhase(Phase::MOVEMENT);
     printMovePhase();
   }
@@ -188,8 +185,12 @@ void Game::checkPhase() {
     setPhase(Phase::PLACEMENT);
   }
   // If there are no more fields left or if we are in the last round, the game ends
-  if (getMap()->getFieldsPerPlayer(*getPlayerA()) == 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) == 0 ||
+  if (getMap()->getFieldsPerPlayer(*getPlayerA()) <= 0 || getMap()->getFieldsPerPlayer(*getPlayerB()) <= 0 ||
       (getPlayerA()->getHasPassed() && getPlayerB()->getHasPassed()) || getPhase() == Phase::END) {
+    if (getPhase() == Phase::PLACEMENT) {
+      std::cout << "This should not happen!\n";
+    }
+
     setPhase(Phase::END);
   } else {
     // In all other instances, we print the player prompt and proceed with the game
@@ -349,11 +350,11 @@ void Game::changePlayer() {
     // If the active player has passed, the next player will be set as the active player
     if (getActivePlayer()->getId() == getPlayerA()->getId()) {
       // Furthermore, the player must have fields left to move chips from
-      if (!getPlayerB()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerB()) != 0){
+      if (!getPlayerB()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerB()) > 0){
         setActivePlayer(getPlayerB());
       }
     } else {
-      if (!getPlayerA()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerA()) != 0) {
+      if (!getPlayerA()->getHasPassed() && getMap()->getFieldsPerPlayer(*getPlayerA()) > 0) {
         setActivePlayer(getPlayerA());
       }
     }

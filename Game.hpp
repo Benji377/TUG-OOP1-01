@@ -38,7 +38,7 @@ private:
   ///
   /// Announces the current round by printing the round number
   //
-  void announceRound();
+  void announceRound() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -179,7 +179,7 @@ public:
   ///
   /// @return The current round of the game
   //
-  int getCurrentRound();
+  int getCurrentRound() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -195,7 +195,7 @@ public:
   ///
   /// @return The maximum rounds of the game
   //
-  int getMaxRounds();
+  [[nodiscard]] int getMaxRounds() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///

@@ -149,8 +149,11 @@ bool Map::moveChip(Player *player, int amount, int from_column, int from_row, in
   Field *from_field = getFields()[from_row][from_column];
   Field *to_field = getFields()[to_row][to_column];
   if (from_field == to_field) {
+    std::cout << "TEST\n";
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
+  } else {
+    std::cout << "TEST2\n";
   }
   if (amount > from_field->getChips()) {
     std::cout << "[ERROR] Invalid amount! Must be a number <= chips on origin field!\n";
