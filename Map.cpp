@@ -12,7 +12,7 @@ Map::Map(char *config_path, Player *player_a, Player *player_b) {
   output_active_ = true;
 }
 
-int Map::getColumns() {
+int Map::getColumns() const {
   return columns_;
 }
 
@@ -20,7 +20,7 @@ void Map::setColumns(int columns) {
   columns_ = columns;
 }
 
-int Map::getRows() {
+int Map::getRows() const {
   return rows_;
 }
 
@@ -36,7 +36,7 @@ void Map::setFields(std::vector<std::vector<Field *>> fields) {
   fields_ = std::move(fields);
 }
 
-bool Map::getIsOutputActive() {
+bool Map::getIsOutputActive() const {
   return output_active_;
 }
 
@@ -44,7 +44,7 @@ void Map::setIsOutputActive(bool output_active) {
   output_active_ = output_active;
 }
 
-std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player *player_a, Player *player_b) {
+std::vector<std::vector<Field *>> Map::createFieldMap(char *config_path, Player *player_a, Player *player_b) const {
   std::string line;
   std::vector<std::vector<Field *>> fields(getRows(), std::vector<Field *>(getColumns()));
   for (int line_number = 0; line_number < getRows(); line_number++) {
@@ -149,11 +149,8 @@ bool Map::moveChip(Player *player, int amount, int from_column, int from_row, in
   Field *from_field = getFields()[from_row][from_column];
   Field *to_field = getFields()[to_row][to_column];
   if (from_field == to_field) {
-    std::cout << "TEST\n";
     std::cout << "[ERROR] Invalid destination!\n";
     return false;
-  } else {
-    std::cout << "TEST2\n";
   }
   if (amount > from_field->getChips()) {
     std::cout << "[ERROR] Invalid amount! Must be a number <= chips on origin field!\n";

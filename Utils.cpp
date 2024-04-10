@@ -29,8 +29,9 @@ bool Utils::decimalStringToInt(const std::string& str, int& number)
   return position == str.length();
 }
 
-// https://stackoverflow.com/a/5207600
-std::fstream& Utils::goToLine(std::fstream& file, int num){
+
+std::fstream& Utils::goToLine(std::fstream& file, int num) {
+  // Provided by Stackoverflow: https://stackoverflow.com/a/5207600
   file.seekg(std::ios::beg);
   for(int i=0; i < num - 1; ++i){
     file.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
@@ -48,10 +49,11 @@ std::string Utils::readConfigLine(char *config_path, int line_number) {
 
 bool Utils::isValidConfig(char *config_path) {
   std::fstream config_file(config_path);
-  if(!config_file.is_open()){
-    std::cout << "File not found" << std::endl;
+  // We need to check if we can open the file first, else we would get an error when reading from it
+  if(!config_file.is_open()) {
     return false;
   }
+  // Now we can read from the file and check if the first line is "OOP"
   std::string magic = readConfigLine(config_path, 0);
   if (magic == "OOP") {
     return true;
@@ -65,10 +67,10 @@ std::vector<std::string> Utils::splitString(const std::string& string, const std
   std::vector<std::string> res;
 
   while ((pos_end = string.find(delimiter, pos_start)) != std::string::npos) {
-    token = string.substr (pos_start, pos_end - pos_start);
+    token = string.substr(pos_start, pos_end - pos_start);
     pos_start = pos_end + delim_len;
     res.push_back (token);
   }
-  res.push_back (string.substr (pos_start));
+  res.push_back(string.substr (pos_start));
   return res;
 }

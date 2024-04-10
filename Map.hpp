@@ -34,7 +34,7 @@ private:
   ///
   /// @return A 2D vector of fields
   //
-  std::vector<std::vector<Field *>> createFieldMap(char *config_path, Player *player_a, Player *player_b);
+  std::vector<std::vector<Field *>> createFieldMap(char *config_path, Player *player_a, Player *player_b) const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -64,7 +64,7 @@ public:
   ///
   /// @return The number of columns
   //
-  int getColumns();
+  [[nodiscard]] int getColumns() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -80,7 +80,7 @@ public:
   ///
   /// @return The number of rows
   //
-  int getRows();
+  [[nodiscard]] int getRows() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
@@ -112,7 +112,7 @@ public:
   ///
   /// @return Whether the output is active or not
   //
-  bool getIsOutputActive();
+  [[nodiscard]] bool getIsOutputActive() const;
 
   ///------------------------------------------------------------------------------------------------------------------
   ///
